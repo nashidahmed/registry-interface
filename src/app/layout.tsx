@@ -1,3 +1,4 @@
+import Header from "@/components/Header"
 import "./globals.css"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
@@ -17,7 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="min-h-screen">{children}</div>
+        <div className="min-h-screen px-24">
+          <Header />
+          {children}
+        </div>
       </body>
     </html>
   )

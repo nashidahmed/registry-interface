@@ -2,11 +2,9 @@
 
 import {
   AuthType,
-  ClaimType,
   SismoConnectButton,
   SismoConnectResponse,
 } from "@sismo-core/sismo-connect-react"
-import Image from "next/image"
 
 import { createWeb3Modal } from "@web3modal/wagmi/react"
 import { walletConnectProvider, EIP6963Connector } from "@web3modal/wagmi"
@@ -17,7 +15,6 @@ import { mainnet } from "wagmi/chains"
 import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet"
 import { InjectedConnector } from "wagmi/connectors/injected"
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
-import Header from "@/components/Header"
 
 // 1. Get projectId
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string
@@ -56,7 +53,6 @@ createWeb3Modal({ wagmiConfig, projectId, chains, themeMode: "light" })
 export default function Home() {
   return (
     <WagmiConfig config={wagmiConfig}>
-      <Header />
       <main>
         <SismoConnectButton
           config={{
