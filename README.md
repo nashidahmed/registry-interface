@@ -1,3 +1,7 @@
+# Docissue Interface
+
+This is the frontend for Docissue, a Web3 Document Issuer/Viewer built in for the ETHOnline 2023 hackathon.
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
