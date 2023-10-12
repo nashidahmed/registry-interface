@@ -8,7 +8,7 @@ export default function Header() {
       </Link>
       <div className="flex items-center gap-4 font-mono">
         <Link href={"/upload"}>Upload Content</Link>
-        <Link href={"/create/issuer"}>For Issuers</Link>
+        <Link href={"/issuer/create"}>For Issuers</Link>
         <w3m-button />
       </div>
     </header>

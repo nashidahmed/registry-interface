@@ -11,9 +11,10 @@ import { walletConnectProvider, EIP6963Connector } from "@web3modal/wagmi"
 import { WagmiConfig, configureChains, createConfig } from "wagmi"
 import { publicProvider } from "wagmi/providers/public"
 import { mainnet } from "wagmi/chains"
-import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet"
 import { InjectedConnector } from "wagmi/connectors/injected"
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
+import { ThemeProvider } from "styled-components"
+import { ThorinGlobalStyles, lightTheme } from "@ensdomains/thorin"
 
 // 1. Get projectId
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string
@@ -38,10 +39,6 @@ const wagmiConfig = createConfig({
     }),
     new EIP6963Connector({ chains }),
     new InjectedConnector({ chains, options: { shimDisconnect: true } }),
-    new CoinbaseWalletConnector({
-      chains,
-      options: { appName: appData.name },
-    }),
   ],
   publicClient,
 })
@@ -65,10 +62,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <WagmiConfig config={wagmiConfig}>
-          <div className="min-h-screen px-24">
-            <Header />
-            {children}
-          </div>
+          <ThemeProvider theme={lightTheme}>
+            <ThorinGlobalStyles />
+            <div className="min-h-screen px-24">
+              <Header />
+              {children}
+            </div>
+          </ThemeProvider>
         </WagmiConfig>
       </body>
     </html>
