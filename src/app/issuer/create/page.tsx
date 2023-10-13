@@ -1,6 +1,6 @@
 "use client"
 
-import docissueAbi from "@public/abis/Docissue.json"
+import docissueAbi from "/public/abis/Docissue.json"
 
 import {
   AuthType,
@@ -54,9 +54,8 @@ export default function CreateIssuer() {
         />
         <div className="mx-auto">
           <SismoConnectButton
-            className="w-fit"
             config={{
-              appId: "0xd6e0a23df3d426bf3b5f232ff4c69058",
+              appId: process.env.NEXT_PUBLIC_SISMO_APP_ID as string,
             }}
             auth={{ authType: AuthType.TWITTER }}
             onResponse={(test: any) => {

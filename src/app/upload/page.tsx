@@ -1,6 +1,6 @@
 "use client"
 
-import docissueAbi from "@public/abis/Docissue.json"
+import docissueAbi from "/public/abis/Docissue.json"
 
 import {
   Button,
@@ -15,13 +15,14 @@ import { FormEvent, useEffect, useState } from "react"
 import { useAccount } from "wagmi"
 import { writeContract } from "@wagmi/core"
 import { Web3Storage } from "web3.storage"
+import lit from "/lib/lit"
 
 export default function Upload() {
   const { address } = useAccount()
 
   const [cid, setCid] = useState<string>()
   const [file, setFile] = useState<File>()
-  const [title, setTitle] = useState<string>()
+  const [title, setTitle] = useState<string>("")
 
   useEffect(() => {})
 
@@ -55,6 +56,10 @@ export default function Upload() {
     console.log(hash)
   }
 
+  async function getPubKey() {
+    await lit.encryptFile(title)
+  }
+
   return (
     <div className="px-96">
       <header className="text-center pt-4 pb-8 text-2xl">
@@ -76,6 +81,11 @@ export default function Upload() {
         <div className="mx-auto">
           <Button className="w-fit" onClick={handleSubmit}>
             Upload document
+          </Button>
+        </div>
+        <div className="mx-auto">
+          <Button className="w-fit" onClick={getPubKey}>
+            Get Pub Key
           </Button>
         </div>
       </Card>

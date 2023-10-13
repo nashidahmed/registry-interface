@@ -7,6 +7,7 @@ export default function Header() {
         Docissue
       </Link>
       <div className="flex items-center gap-4 font-mono">
+        <Link href={"/view"}>View Content</Link>
         <Link href={"/upload"}>Upload Content</Link>
         <Link href={"/issuer/create"}>For Issuers</Link>
         <w3m-button />

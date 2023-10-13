@@ -20,7 +20,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@*": ["./*"]
+      "/*": ["./*"],
+      "@ensdomains/thorin": ["./node_modules/@ensdomains/thorin"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
