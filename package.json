@@ -10,12 +10,16 @@
   },
   "dependencies": {
     "@ensdomains/thorin": "^0.6.44",
+    "@lit-protocol/lit-auth-client": "^2.2.61",
+    "@lit-protocol/lit-node-client": "^3.0.2",
     "@sismo-core/sismo-connect-react": "^0.0.23",
+    "@stytch/stytch-js": "^3.3.3",
     "@tableland/sdk": "^4.5.3-dev.0",
     "@web3modal/wagmi": "^3.1.0",
     "ethers": "^6.8.0",
     "minimist": "^1.2.5",
     "next": "13.5.4",
+    "prompts": "^2.4.2",
     "react": "^18",
     "react-dom": "^18",
     "react-transition-state": "^2.1.1",
@@ -25,7 +29,8 @@
     "web3.storage": "^4.5.5"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^20.8.4",
+    "@types/prompts": "^2.4.6",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10",

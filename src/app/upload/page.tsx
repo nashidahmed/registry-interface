@@ -1,8 +1,19 @@
 "use client"
 
+import docissueAbi from "@public/abis/Docissue.json"
+
+import {
+  Button,
+  FileInput,
+  VisuallyHidden,
+  Card,
+  Input,
+  CloseSVG,
+} from "@ensdomains/thorin"
 import { ethers } from "ethers"
 import { FormEvent, useEffect, useState } from "react"
 import { useAccount } from "wagmi"
+import { writeContract } from "@wagmi/core"
 import { Web3Storage } from "web3.storage"
 
 export default function Upload() {
@@ -11,7 +22,6 @@ export default function Upload() {
   const [cid, setCid] = useState<string>()
   const [file, setFile] = useState<File>()
   const [title, setTitle] = useState<string>()
-  const [desc, setDesc] = useState<string>()
 
   useEffect(() => {})
 
@@ -33,29 +43,42 @@ export default function Upload() {
       onStoredChunk: (bytes: any) =>
         console.log(`> 🛰 sent ${bytes.toLocaleString()} bytes to web3.storage`),
     })
+
+    const { hash } = await writeContract({
+      address: process.env
+        .NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS as `0x${string}`,
+      abi: docissueAbi,
+      functionName: "uploadDocument",
+      args: [title, cid],
+    })
+
+    console.log(hash)
   }
 
   return (
-    <form id="upload-form" onSubmit={handleSubmit}>
-      <label htmlFor="title">Title</label>
-      <input
-        type="text"
-        id="title"
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <label htmlFor="desc">Description</label>
-      <input type="text" id="desc" onChange={(e) => setDesc(e.target.value)} />
-      <label htmlFor="filepicker">Pick files to store</label>
-      <br />
-      <br />
-      <input
-        type="file"
-        id="filepicker"
-        name="fileList"
-        onChange={(e) => setFile(e.target.files[0])}
-        required
-      />
-      <input type="submit" value="Upload" id="submit" />
-    </form>
+    <div className="px-96">
+      <header className="text-center pt-4 pb-8 text-2xl">
+        Upload a document
+      </header>
+      <Card>
+        <Input
+          label="Title"
+          placeholder="Enter the document title"
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <input
+          type="file"
+          id="filepicker"
+          name="fileList"
+          onChange={(e) => setFile(e.target.files[0])}
+          required
+        />
+        <div className="mx-auto">
+          <Button className="w-fit" onClick={handleSubmit}>
+            Upload document
+          </Button>
+        </div>
+      </Card>
+    </div>
   )
 }

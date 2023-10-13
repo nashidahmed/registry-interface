@@ -5,7 +5,7 @@ import { Database } from "@tableland/sdk"
 
 export default function View() {
   // This table has schema: `counter INTEGER PRIMARY KEY`
-  const tableName: string = "issuers_80001_7706" // Our pre-defined health check table
+  const tableName: string = "issuers_80001_7721" // Our pre-defined health check table
 
   const db = new Database()
 

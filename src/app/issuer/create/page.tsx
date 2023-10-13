@@ -21,10 +21,11 @@ export default function CreateIssuer() {
 
   async function createIssuer() {
     const { hash } = await writeContract({
-      address: "0x8E1b5b3721155A54860a56e3A03e991Cb677Fa8a",
+      address: process.env
+        .NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS as `0x${string}`,
       abi: docissueAbi,
       functionName: "createIssuer",
-      args: [responseBytes],
+      args: [responseBytes, name, website, desc],
     })
 
     console.log(hash)
@@ -56,9 +57,6 @@ export default function CreateIssuer() {
             className="w-fit"
             config={{
               appId: "0xd6e0a23df3d426bf3b5f232ff4c69058",
-              vault: {
-                impersonate: ["twitter:dhadrien_"],
-              },
             }}
             auth={{ authType: AuthType.TWITTER }}
             onResponse={(test: any) => {
