@@ -75,7 +75,7 @@ export default function Upload() {
           type="file"
           id="filepicker"
           name="fileList"
-          onChange={(e) => setFile(e.target.files[0])}
+          onChange={(e) => setFile(e.target.files?.[0])}
           required
         />
         <div className="mx-auto">

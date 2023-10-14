@@ -19,7 +19,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["./src/*", "./src/app/*"],
       "/*": ["./*"],
       "@ensdomains/thorin": ["./node_modules/@ensdomains/thorin"]
     }

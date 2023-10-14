@@ -1,11 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { isSignInRedirect } from "@lit-protocol/lit-auth-client"
 import { AuthMethod } from "@lit-protocol/types"
-import {
-  authenticateWithGoogle,
-  authenticateWithEthWallet,
-  authenticateWithStytch,
-} from "../utils/lit"
+import { authenticateWithGoogle, authenticateWithEthWallet } from "@/utils/lit"
 import { useConnect } from "wagmi"
 
 export default function useAuthenticate(redirectUri?: string) {
@@ -72,30 +68,6 @@ export default function useAuthenticate(redirectUri?: string) {
     [connectAsync]
   )
 
-  /**
-   * Authenticate with Stytch
-   */
-  const authWithStytch = useCallback(
-    async (accessToken: string, userId?: string): Promise<void> => {
-      setLoading(true)
-      setError(undefined)
-      setAuthMethod(undefined)
-
-      try {
-        const result: AuthMethod = (await authenticateWithStytch(
-          accessToken,
-          userId
-        )) as any
-        setAuthMethod(result)
-      } catch (err) {
-        setError(err)
-      } finally {
-        setLoading(false)
-      }
-    },
-    []
-  )
-
   useEffect(() => {
     // Check if user is redirected from social login
     if (redirectUri && isSignInRedirect(redirectUri)) {
@@ -106,7 +78,6 @@ export default function useAuthenticate(redirectUri?: string) {
 
   return {
     authWithEthWallet,
-    authWithStytch,
     authMethod,
     loading,
     error,
