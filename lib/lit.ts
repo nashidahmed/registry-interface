@@ -1,13 +1,25 @@
 import * as LitJsSdk from "@lit-protocol/lit-node-client"
 import { ethConnect } from "@lit-protocol/auth-browser"
-import { LitAuthClient } from "@lit-protocol/lit-auth-client"
+import {
+  GoogleProvider,
+  LitAuthClient,
+  isSignInRedirect,
+} from "@lit-protocol/lit-auth-client"
 import { ProviderType } from "@lit-protocol/constants"
+import { AuthMethod } from "@lit-protocol/types"
+import {
+  LitAccessControlConditionResource,
+  LitAbility,
+} from "@lit-protocol/auth-helpers"
+import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
 
 const STYTCH_PROJECT_ID: string = process.env
   .NEXT_PUBLIC_STYTCH_PROJECT_ID as string
 const STYTCH_SECRET: string = process.env.NEXT_PUBLIC_STYTCH_SECRET as string
 const LIT_RELAY_API_KEY: string = process.env
   .NEXT_PUBLIC_LIT_RELAY_API_KEY as string
+
+const redirectUri = "http://localhost:3000/view"
 
 if (!STYTCH_PROJECT_ID || !STYTCH_SECRET) {
   throw Error("Could not find stytch project secret or id in enviorment")
@@ -35,23 +47,67 @@ const litAuthClient = new LitAuthClient({
 // Initialize Google provider
 litAuthClient.initProvider(ProviderType.Google, {
   // The URL of your web app where users will be redirected after authentication
-  redirectUri: "http://localhost:3000/view",
+  redirectUri,
 })
 
 class Lit {
   private litNodeClient: LitJsSdk.LitNodeClient
-  private authClient: LitAuthClient
+  authClient: LitAuthClient
+  authMethod: AuthMethod
+  provider: GoogleProvider
 
   constructor() {
-    console.log("Entered here")
     this.connect()
     this.litNodeClient = litClient
     this.authClient = litAuthClient
+    this.provider = litAuthClient.getProvider(
+      ProviderType.Google
+    ) as GoogleProvider
+    this.handleRedirect()
   }
 
   async connect() {
     await litClient.connect()
   }
+
+  async handleRedirect() {
+    // Check if app has been redirected from Lit login server
+    if (isSignInRedirect(redirectUri)) {
+      // Get the provider that was used to sign in
+
+      // Get auth method object that has the OAuth token from redirect callback
+      const authMethod: AuthMethod = await this.provider.authenticate()
+      this.authMethod = authMethod
+      console.log(this.authMethod)
+    }
+  }
+
+  async generateSessionSigs() {
+    // Get session signatures for the given PKP public key and auth method
+    const sessionSigs = await this.provider.getSessionSigs({
+      authMethod: this.authMethod,
+      pkpPublicKey: "",
+      sessionSigsParams: {
+        chain: "ethereum",
+        resourceAbilityRequests: [
+          {
+            resource: new LitAccessControlConditionResource("*"),
+            ability: LitAbility.AccessControlConditionDecryption,
+          },
+        ],
+      },
+    })
+  }
+
+  // async createWallet() {
+  //   const pkpWallet = new PKPEthersWallet({
+  //     controllerAuthSig: "<Your AuthSig>",
+  //     // Or you can also pass in controllerSessionSigs
+  //     pkpPubKey: "<Your PKP public key>",
+  //     rpc: "https://chain-rpc.litprotocol.com/http",
+  //   })
+  //   await pkpWallet.init()
+  // }
 
   encryptFile(userId: string) {
     // if (!this.litNodeClient) {

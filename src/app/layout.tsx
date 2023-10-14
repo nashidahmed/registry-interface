@@ -10,7 +10,7 @@ import { walletConnectProvider, EIP6963Connector } from "@web3modal/wagmi"
 
 import { WagmiConfig, configureChains, createConfig } from "wagmi"
 import { publicProvider } from "wagmi/providers/public"
-import { mainnet } from "wagmi/chains"
+import { mainnet, polygonMumbai } from "wagmi/chains"
 import { InjectedConnector } from "wagmi/connectors/injected"
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
 import { ThemeProvider } from "styled-components"
@@ -23,7 +23,7 @@ const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string
 
 // 2. Create wagmiConfig
 const { chains, publicClient } = configureChains(
-  [mainnet],
+  [polygonMumbai, mainnet],
   [walletConnectProvider({ projectId }), publicProvider()]
 )
 
