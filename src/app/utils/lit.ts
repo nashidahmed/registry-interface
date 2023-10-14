@@ -74,31 +74,6 @@ export async function authenticateWithEthWallet(
 }
 
 /**
- * Send OTP code to user
- */
-export async function sendOTPCode(emailOrPhone: string) {
-  const otpProvider = litAuthClient.initProvider<OtpProvider>(
-    ProviderType.Otp,
-    {
-      userId: emailOrPhone,
-    } as unknown as ProviderOptions
-  )
-  const status = await otpProvider.sendOtpCode()
-  return status
-}
-
-/**
- * Get auth method object by validating the OTP code
- */
-export async function authenticateWithOTP(
-  code: string
-): Promise<AuthMethod | undefined> {
-  const otpProvider = litAuthClient.getProvider(ProviderType.Otp)
-  const authMethod = await otpProvider?.authenticate({ code })
-  return authMethod
-}
-
-/**
  * Generate session sigs for given params
  */
 export async function getSessionSigs({
@@ -173,10 +148,6 @@ function getProviderByAuthMethod(authMethod: AuthMethod) {
       return litAuthClient.getProvider(ProviderType.Google) as BaseProvider
     case AuthMethodType.EthWallet:
       return litAuthClient.getProvider(ProviderType.EthWallet) as BaseProvider
-    case AuthMethodType.OTP:
-      return litAuthClient.getProvider(ProviderType.Otp) as BaseProvider
-    case AuthMethodType.StytchOtp:
-      return litAuthClient.getProvider(ProviderType.StytchOtp) as BaseProvider
     default:
       return
   }

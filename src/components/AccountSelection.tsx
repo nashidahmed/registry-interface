@@ -1,12 +1,12 @@
-import * as RadioGroup from '@radix-ui/react-radio-group';
+import * as RadioGroup from "@radix-ui/react-radio-group"
 
-import { IRelayPKP } from '@lit-protocol/types';
-import { useState } from 'react';
+import { IRelayPKP } from "@lit-protocol/types"
+import { useState } from "react"
 
 interface AccountSelectionProp {
-  accounts: IRelayPKP[];
-  setCurrentAccount: any;
-  error?: Error;
+  accounts: IRelayPKP[]
+  setCurrentAccount: any
+  error?: Error
 }
 
 export default function AccountSelection({
@@ -14,16 +14,16 @@ export default function AccountSelection({
   setCurrentAccount,
   error,
 }: AccountSelectionProp) {
-  const [selectedValue, setSelectedValue] = useState<string>('0');
+  const [selectedValue, setSelectedValue] = useState<string>("0")
 
   async function handleSubmit(event: any) {
-    event.preventDefault();
-    const account = accounts[parseInt(selectedValue)];
-    return setCurrentAccount(account);
+    event.preventDefault()
+    const account = accounts[parseInt(selectedValue)]
+    return setCurrentAccount(account)
   }
 
   return (
-    <div className="container">
+    <div className="container mx-auto mt-24">
       <div className="wrapper">
         {error && (
           <div className="alert alert--error">
@@ -43,7 +43,7 @@ export default function AccountSelection({
               <div
                 key={`account-${index}`}
                 className={`account-item ${
-                  selectedValue === index.toString() && 'account-item--selected'
+                  selectedValue === index.toString() && "account-item--selected"
                 }`}
               >
                 <RadioGroup.Item
@@ -51,7 +51,7 @@ export default function AccountSelection({
                   value={index.toString()}
                   id={account.ethAddress}
                 >
-                  {' '}
+                  {" "}
                   <RadioGroup.Indicator className="account-item__indicator" />
                 </RadioGroup.Item>
                 <label
@@ -69,5 +69,5 @@ export default function AccountSelection({
         </form>
       </div>
     </div>
-  );
+  )
 }

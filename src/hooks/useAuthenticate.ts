@@ -30,7 +30,7 @@ export default function useAuthenticate(redirectUri?: string) {
       )) as any
       setAuthMethod(result)
     } catch (err) {
-      setError(err)
+      setError(err as Error)
     } finally {
       setLoading(false)
     }
@@ -54,13 +54,13 @@ export default function useAuthenticate(redirectUri?: string) {
           const sig = await signer.signMessage(message)
           return sig
         }
-        const result: AuthMethod = await authenticateWithEthWallet(
+        const result: AuthMethod = (await authenticateWithEthWallet(
           account,
           signMessage
-        )
+        )) as AuthMethod
         setAuthMethod(result)
       } catch (err) {
-        setError(err)
+        setError(err as Error)
       } finally {
         setLoading(false)
       }

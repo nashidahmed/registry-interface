@@ -1,15 +1,22 @@
-import { useEffect } from "react"
-import { useRouter } from "next/router"
+"use client"
+
+import { useEffect, useState } from "react"
 import useAuthenticate from "@/hooks/useAuthenticate"
 import useSession from "@/hooks/useSession"
 import useAccounts from "@/hooks/useAccounts"
 import { ORIGIN, signInWithGoogle } from "@/utils/lit"
 import Loading from "@/components/Loading"
-import LoginMethods from "@/components/LoginMethods"
+import AuthMethods from "@/components/AuthMethods"
+import WalletMethods from "@/components/WalletMethods"
 import AccountSelection from "@/components/AccountSelection"
 import CreateAccount from "@/components/CreateAccount"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+
+type AuthView = "default" | "wallet"
 
 export default function LoginView() {
+  const [view, setView] = useState<AuthView>("default")
   const redirectUri = ORIGIN + "/login"
 
   const {
@@ -41,13 +48,13 @@ export default function LoginView() {
   }
 
   function goToSignUp() {
-    router.push("/")
+    router.push("/signup")
   }
 
   useEffect(() => {
     // If user is authenticated, fetch accounts
     if (authMethod) {
-      router.replace(window.location.pathname, undefined, { shallow: true })
+      router.replace(window.location.pathname, undefined)
       fetchAccounts(authMethod)
     }
   }, [authMethod, fetchAccounts])
@@ -73,9 +80,7 @@ export default function LoginView() {
 
   // If user is authenticated and has selected an account, initialize session
   if (currentAccount && sessionSigs) {
-    return (
-      <Dashboard currentAccount={currentAccount} sessionSigs={sessionSigs} />
-    )
+    router.push("/dashboard")
   }
 
   // If user is authenticated and has more than 1 account, show account selection
@@ -96,11 +101,35 @@ export default function LoginView() {
 
   // If user is not authenticated, show login methods
   return (
-    <LoginMethods
-      handleGoogleLogin={handleGoogleLogin}
-      authWithEthWallet={authWithEthWallet}
-      signUp={goToSignUp}
-      error={error}
-    />
+    <div className="container mx-auto mt-24">
+      <div className="wrapper">
+        {error && (
+          <div className="alert alert--error">
+            <p>{error.message}</p>
+          </div>
+        )}
+        {view === "default" && (
+          <>
+            <h1>Welcome back</h1>
+            <p>Access your Lit wallet.</p>
+            <AuthMethods
+              handleGoogleLogin={handleGoogleLogin}
+              setView={setView}
+            />
+            <div className="buttons-container">
+              <Link className="btn btn--link" href={"/signup"}>
+                Need an account? Sign up
+              </Link>
+            </div>
+          </>
+        )}
+        {view === "wallet" && (
+          <WalletMethods
+            authWithEthWallet={authWithEthWallet}
+            setView={setView}
+          />
+        )}
+      </div>
+    </div>
   )
 }

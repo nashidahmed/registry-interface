@@ -11,7 +11,7 @@ export default function Header() {
         <Link href={"/view"}>View Content</Link>
         <Link href={"/upload"}>Upload Content</Link>
         <Link href={"/issuer/create"}>For Issuers</Link>
-        <w3m-button />
+        {/* <w3m-button /> */}
       </div>
     </header>
   )

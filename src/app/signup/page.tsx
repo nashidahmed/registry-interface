@@ -1,29 +1,75 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
-import AuthMethods from "../../components/AuthMethods"
-import EmailSMSAuth from "../../components/EmailSMSAuth"
-import WalletMethods from "../../components/WalletMethods"
+import AuthMethods from "@/components/AuthMethods"
+import WalletMethods from "@/components/WalletMethods"
+import Loading from "@/components/Loading"
+import { ORIGIN, signInWithGoogle } from "../utils/lit"
+import useSession from "@/hooks/useSession"
+import useAccounts from "@/hooks/useAccounts"
+import useAuthenticate from "@/hooks/useAuthenticate"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
 
-interface SignUpProps {
-  handleGoogleLogin: () => Promise<void>
-  authWithEthWallet: any
-  authWithOTP: any
-  goToLogin: any
-  error?: Error
-}
+type AuthView = "default" | "wallet"
 
-type AuthView = "default" | "email" | "phone" | "wallet" | "webauthn"
-
-export default function SignUp({
-  handleGoogleLogin,
-  authWithEthWallet,
-  authWithOTP,
-  goToLogin,
-  error,
-}: SignUpProps) {
+export default function SignUp() {
   const [view, setView] = useState<AuthView>("default")
+  const redirectUri = ORIGIN + "/signup"
+  console.log(redirectUri)
+
+  const {
+    authMethod,
+    authWithEthWallet,
+    loading: authLoading,
+    error: authError,
+  } = useAuthenticate(redirectUri)
+  const {
+    createAccount,
+    currentAccount,
+    loading: accountsLoading,
+    error: accountsError,
+  } = useAccounts()
+  const {
+    initSession,
+    sessionSigs,
+    loading: sessionLoading,
+    error: sessionError,
+  } = useSession()
+  const router = useRouter()
+
+  const error = authError || accountsError || sessionError
+
+  async function handleGoogleLogin() {
+    await signInWithGoogle(redirectUri)
+  }
+
+  useEffect(() => {
+    if (authMethod) {
+      router.replace(window.location.pathname, undefined)
+      createAccount(authMethod)
+    }
+  }, [authMethod, createAccount])
+
+  useEffect(() => {
+    // If user is authenticated and has at least one account, initialize session
+    if (authMethod && currentAccount) {
+      initSession(authMethod, currentAccount)
+    }
+  }, [authMethod, currentAccount, initSession])
+
+  if (authLoading) {
+    return <Loading copy={"Authenticating your credentials..."} error={error} />
+  }
+
+  if (accountsLoading) {
+    return <Loading copy={"Creating your account..."} error={error} />
+  }
+
+  if (sessionLoading) {
+    return <Loading copy={"Securing your session..."} error={error} />
+  }
 
   return (
     <div className="container mx-auto mt-24">
@@ -46,22 +92,11 @@ export default function SignUp({
               setView={setView}
             />
             <div className="buttons-container">
-              <button
-                type="button"
-                className="btn btn--link"
-                onClick={goToLogin}
-              >
+              <Link className="btn btn--link" href={"/login"}>
                 Have an account? Log in
-              </button>
+              </Link>
             </div>
           </>
-        )}
-        {view === "email" && (
-          <EmailSMSAuth
-            method={"email"}
-            setView={setView}
-            authWithOTP={authWithOTP}
-          />
         )}
         {view === "wallet" && (
           <WalletMethods

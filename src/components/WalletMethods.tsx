@@ -2,14 +2,17 @@ import { useConnect } from "wagmi"
 import { useIsMounted } from "../hooks/useIsMounted"
 import Image from "next/image"
 
+type AuthView = "default" | "wallet"
+
 interface WalletMethodsProps {
   authWithEthWallet: (connector: any) => Promise<void>
-  setView: React.Dispatch<React.SetStateAction<string>>
+  setView: React.Dispatch<React.SetStateAction<AuthView>>
 }
 
 const WalletMethods = ({ authWithEthWallet, setView }: WalletMethodsProps) => {
   const isMounted = useIsMounted()
   const { connectors } = useConnect()
+  const connector = connectors[2]
 
   if (!isMounted) return null
 
@@ -21,26 +24,24 @@ const WalletMethods = ({ authWithEthWallet, setView }: WalletMethodsProps) => {
         of the address.
       </p>
       <div className="buttons-container">
-        {connectors.map((connector) => (
-          <button
-            type="button"
-            className="btn btn--outline"
-            disabled={!connector.ready}
-            key={connector.id}
-            onClick={() => authWithEthWallet({ connector })}
-          >
-            {connector.name.toLowerCase() === "metamask" && (
-              <div className="btn__icon">
-                <Image
-                  src="/icons/metamask.png"
-                  alt="MetaMask logo"
-                  fill={true}
-                ></Image>
-              </div>
-            )}
-            <span className="btn__label">Continue with {connector.name}</span>
-          </button>
-        ))}
+        <button
+          type="button"
+          className="btn btn--outline"
+          disabled={!connector.ready}
+          key={connector.id}
+          onClick={() => authWithEthWallet({ connector })}
+        >
+          {connector.name.toLowerCase() === "metamask" && (
+            <div className="btn__icon">
+              <Image
+                src="/icons/metamask.png"
+                alt="MetaMask logo"
+                fill={true}
+              ></Image>
+            </div>
+          )}
+          <span className="btn__label">Continue with {connector.name}</span>
+        </button>
         <button onClick={() => setView("default")} className="btn btn--link">
           Back
         </button>
