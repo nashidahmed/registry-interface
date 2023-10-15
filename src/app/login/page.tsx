@@ -8,10 +8,9 @@ import { ORIGIN, signInWithGoogle } from "@/utils/lit"
 import Loading from "@/components/Loading"
 import AuthMethods from "@/components/AuthMethods"
 import WalletMethods from "@/components/WalletMethods"
-import AccountSelection from "@/components/AccountSelection"
 import CreateAccount from "@/components/CreateAccount"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 type AuthView = "default" | "wallet"
 
@@ -26,10 +25,8 @@ export default function LoginView() {
     error: authError,
   } = useAuthenticate(redirectUri)
   const {
-    fetchAccounts,
-    setCurrentAccount,
+    fetchAccount,
     currentAccount,
-    accounts,
     loading: accountsLoading,
     error: accountsError,
   } = useAccounts()
@@ -47,21 +44,18 @@ export default function LoginView() {
     await signInWithGoogle(redirectUri)
   }
 
-  function goToSignUp() {
-    router.push("/signup")
-  }
-
   useEffect(() => {
     // If user is authenticated, fetch accounts
     if (authMethod) {
       router.replace(window.location.pathname, undefined)
-      fetchAccounts(authMethod)
+      fetchAccount(authMethod)
     }
-  }, [authMethod, fetchAccounts])
+  }, [authMethod, fetchAccount])
 
   useEffect(() => {
     // If user is authenticated and has selected an account, initialize session
     if (authMethod && currentAccount) {
+      console.log(authMethod, currentAccount)
       initSession(authMethod, currentAccount)
     }
   }, [authMethod, currentAccount, initSession])
@@ -83,20 +77,9 @@ export default function LoginView() {
     router.push("/dashboard")
   }
 
-  // If user is authenticated and has more than 1 account, show account selection
-  if (authMethod && accounts.length > 0) {
-    return (
-      <AccountSelection
-        accounts={accounts}
-        setCurrentAccount={setCurrentAccount}
-        error={error}
-      />
-    )
-  }
-
   // If user is authenticated but has no accounts, prompt to create an account
-  if (authMethod && accounts.length === 0) {
-    return <CreateAccount signUp={goToSignUp} error={error} />
+  if (authMethod && !currentAccount) {
+    return <CreateAccount error={error} />
   }
 
   // If user is not authenticated, show login methods

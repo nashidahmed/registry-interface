@@ -4,27 +4,26 @@ import { getPKPs, mintPKP } from "@/utils/lit"
 import { IRelayPKP } from "@lit-protocol/types"
 
 export default function useAccounts() {
-  const [accounts, setAccounts] = useState<IRelayPKP[]>([])
-  const [currentAccount, setCurrentAccount] = useState<IRelayPKP>()
+  const [currentAccount, setCurrentAccount] = useState<IRelayPKP>(
+    sessionStorage.getItem("account")
+      ? JSON.parse(sessionStorage.getItem("account") as string)
+      : null
+  )
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error>()
 
   /**
    * Fetch PKPs tied to given auth method
    */
-  const fetchAccounts = useCallback(
+  const fetchAccount = useCallback(
     async (authMethod: AuthMethod): Promise<void> => {
       setLoading(true)
       setError(undefined)
       try {
         // Fetch PKPs tied to given auth method
         const myPKPs = await getPKPs(authMethod)
-        // console.log('fetchAccounts pkps: ', myPKPs);
-        setAccounts(myPKPs)
-        // If only one PKP, set as current account
-        if (myPKPs.length === 1) {
-          setCurrentAccount(myPKPs[0])
-        }
+        sessionStorage.setItem("account", JSON.stringify(myPKPs[0]))
+        setCurrentAccount(myPKPs[0])
       } catch (err) {
         setError(err as Error)
       } finally {
@@ -42,10 +41,13 @@ export default function useAccounts() {
       setLoading(true)
       setError(undefined)
       try {
-        const newPKP = await mintPKP(authMethod)
-        // console.log('createAccount pkp: ', newPKP);
-        setAccounts((prev) => [...prev, newPKP])
-        setCurrentAccount(newPKP)
+        let newPKP
+        fetchAccount(authMethod)
+        if (!currentAccount) {
+          newPKP = await mintPKP(authMethod)
+          sessionStorage.setItem("account", JSON.stringify(newPKP))
+          setCurrentAccount(newPKP)
+        }
       } catch (err) {
         setError(err as Error)
       } finally {
@@ -56,10 +58,9 @@ export default function useAccounts() {
   )
 
   return {
-    fetchAccounts,
+    fetchAccount,
     createAccount,
     setCurrentAccount,
-    accounts,
     currentAccount,
     loading,
     error,

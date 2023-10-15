@@ -1,9 +1,10 @@
+import Link from "next/link"
+
 interface CreateAccountProp {
-  signUp: any
   error?: Error
 }
 
-export default function CreateAccount({ signUp, error }: CreateAccountProp) {
+export default function CreateAccount({ error }: CreateAccountProp) {
   return (
     <div className="container">
       <div className="wrapper">
@@ -18,9 +19,9 @@ export default function CreateAccount({ signUp, error }: CreateAccountProp) {
           credentials. Create one today.
         </p>
         <div className="buttons-container">
-          <button onClick={signUp} className="btn btn--primary">
+          <Link href={"/signup"} className="btn btn--primary">
             Sign up
-          </button>
+          </Link>
         </div>
       </div>
     </div>

@@ -71,6 +71,11 @@ export default function SignUp() {
     return <Loading copy={"Securing your session..."} error={error} />
   }
 
+  // If user is authenticated and has selected an account, initialize session
+  if (currentAccount && sessionSigs) {
+    router.push("/dashboard")
+  }
+
   return (
     <div className="container mx-auto mt-24">
       <div className="wrapper">
