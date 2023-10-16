@@ -33,12 +33,13 @@ export default function CreateIssuer() {
 
   return (
     <div className="px-96">
-      <header className="text-center pt-4 pb-8 text-2xl">
-        Become an issuer
+      <header className="h-32 flex items-center justify-center text-2xl">
+        Create a profile
       </header>
       <Card>
+        {responseBytes}
         <Input
-          label="Name"
+          label="Organization name"
           placeholder="Enter your name"
           onChange={(e) => setName(e.target.value)}
         />
@@ -58,9 +59,6 @@ export default function CreateIssuer() {
               appId: process.env.NEXT_PUBLIC_SISMO_APP_ID as string,
             }}
             auth={{ authType: AuthType.TWITTER }}
-            onResponse={(test: any) => {
-              console.log(test)
-            }}
             onResponseBytes={(bytes: string) => {
               setResponseBytes(bytes)
             }}

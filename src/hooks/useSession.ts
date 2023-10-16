@@ -3,9 +3,14 @@ import { AuthMethod } from "@lit-protocol/types"
 import { getSessionSigs } from "@/utils/lit"
 import { LitAbility, LitActionResource } from "@lit-protocol/auth-helpers"
 import { IRelayPKP } from "@lit-protocol/types"
-import { SessionSigs } from "@lit-protocol/types"
+import { SessionSigs, SessionKeyPair } from "@lit-protocol/types"
+import { LOCAL_STORAGE_KEYS } from "@lit-protocol/constants"
 
 export default function useSession() {
+  const sessionKey: SessionKeyPair =
+    localStorage.getItem(LOCAL_STORAGE_KEYS.SESSION_KEY) || ""
+      ? JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEYS.SESSION_KEY) || "")
+      : undefined
   const [sessionSigs, setSessionSigs] = useState<SessionSigs>()
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error>()
@@ -55,6 +60,7 @@ export default function useSession() {
 
   return {
     initSession,
+    sessionKey,
     sessionSigs,
     setSessionSigs,
     loading,

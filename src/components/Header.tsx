@@ -1,5 +1,5 @@
 import { ORIGIN, signInWithGoogle } from "@/utils/lit"
-import useAccounts from "@/hooks/useAccounts"
+import useAccount from "@/hooks/useAccount"
 import useAuthenticate from "@/hooks/useAuthenticate"
 import useSession from "@/hooks/useSession"
 import Link from "next/link"
@@ -9,6 +9,7 @@ import { useDisconnect } from "wagmi"
 import Image from "next/image"
 import { disconnectWeb3 } from "@lit-protocol/lit-node-client"
 import { LOCAL_STORAGE_KEYS } from "@lit-protocol/constants"
+import { PKPClient } from "@lit-protocol/pkp-client"
 
 export default function Header() {
   const redirectUri = ORIGIN + "/"
@@ -25,9 +26,10 @@ export default function Header() {
     setAccount,
     loading: accountLoading,
     error: accountError,
-  } = useAccounts()
+  } = useAccount()
   const {
     initSession,
+    sessionKey,
     sessionSigs,
     setSessionSigs,
     loading: sessionLoading,
@@ -48,10 +50,17 @@ export default function Header() {
   useEffect(() => {
     // If user is authenticated and has selected an account, initialize session
     if (authMethod && account) {
-      console.log(authMethod, account)
       initSession(authMethod, account)
     }
   }, [authMethod, account, initSession])
+
+  async function connectPKP() {
+    const pkpClient = new PKPClient({
+      controllerSessionSigs: sessionSigs,
+      pkpPubKey: account?.ethAddress as string,
+    })
+    await pkpClient.connect()
+  }
 
   async function handleGoogleLogin() {
     await signInWithGoogle(redirectUri)
@@ -66,14 +75,12 @@ export default function Header() {
 
   function ButtonText() {
     if (authLoading || accountLoading || sessionLoading) {
-      console.log(authLoading, accountLoading, sessionLoading)
       return (
         <div>
           <div className="loader w-6 h-6"></div>
         </div>
       )
-    } else if (account && sessionSigs) {
-      console.log(account, sessionSigs)
+    } else if (sessionKey || (account && sessionSigs)) {
       return <span>Sign out</span>
     } else {
       return <span>Sign in with Google</span>
@@ -97,7 +104,11 @@ export default function Header() {
               : "bg-gray-100"
           } text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded-full shadow`}
           disabled={authLoading || accountLoading || sessionLoading}
-          onClick={account && sessionSigs ? handleLogout : handleGoogleLogin}
+          onClick={
+            sessionKey || (account && sessionSigs)
+              ? handleLogout
+              : handleGoogleLogin
+          }
         >
           <div className="btn__icon">
             <Image
