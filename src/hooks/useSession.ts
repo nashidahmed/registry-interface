@@ -15,6 +15,7 @@ export default function useSession() {
    */
   const initSession = useCallback(
     async (authMethod: AuthMethod, pkp: IRelayPKP): Promise<void> => {
+      console.log("Initiating session")
       setLoading(true)
       setError(undefined)
       try {
@@ -46,6 +47,7 @@ export default function useSession() {
         setError(err as Error)
       } finally {
         setLoading(false)
+        console.log("Initiated session")
       }
     },
     []
@@ -54,6 +56,7 @@ export default function useSession() {
   return {
     initSession,
     sessionSigs,
+    setSessionSigs,
     loading,
     error,
   }

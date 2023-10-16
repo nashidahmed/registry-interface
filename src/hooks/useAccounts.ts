@@ -3,12 +3,8 @@ import { AuthMethod } from "@lit-protocol/types"
 import { getPKPs, mintPKP } from "@/utils/lit"
 import { IRelayPKP } from "@lit-protocol/types"
 
-export default function useAccounts() {
-  const [currentAccount, setCurrentAccount] = useState<IRelayPKP>(
-    sessionStorage.getItem("account")
-      ? JSON.parse(sessionStorage.getItem("account") as string)
-      : null
-  )
+export default function useAccount() {
+  const [account, setAccount] = useState<IRelayPKP>()
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error>()
 
@@ -22,31 +18,11 @@ export default function useAccounts() {
       try {
         // Fetch PKPs tied to given auth method
         const myPKPs = await getPKPs(authMethod)
-        sessionStorage.setItem("account", JSON.stringify(myPKPs[0]))
-        setCurrentAccount(myPKPs[0])
-      } catch (err) {
-        setError(err as Error)
-      } finally {
-        setLoading(false)
-      }
-    },
-    []
-  )
-
-  /**
-   * Mint a new PKP for current auth method
-   */
-  const createAccount = useCallback(
-    async (authMethod: AuthMethod): Promise<void> => {
-      setLoading(true)
-      setError(undefined)
-      try {
-        let newPKP
-        fetchAccount(authMethod)
-        if (!currentAccount) {
-          newPKP = await mintPKP(authMethod)
-          sessionStorage.setItem("account", JSON.stringify(newPKP))
-          setCurrentAccount(newPKP)
+        if (myPKPs.length > 0) {
+          setAccount(myPKPs[0])
+        } else {
+          const newPKP = await mintPKP(authMethod)
+          setAccount(newPKP)
         }
       } catch (err) {
         setError(err as Error)
@@ -59,9 +35,8 @@ export default function useAccounts() {
 
   return {
     fetchAccount,
-    createAccount,
-    setCurrentAccount,
-    currentAccount,
+    setAccount,
+    account,
     loading,
     error,
   }

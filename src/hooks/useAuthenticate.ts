@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { isSignInRedirect } from "@lit-protocol/lit-auth-client"
 import { AuthMethod } from "@lit-protocol/types"
-import { authenticateWithGoogle, authenticateWithEthWallet } from "@/utils/lit"
+import { authenticateWithGoogle } from "@/utils/lit"
 import { useConnect } from "wagmi"
 
 export default function useAuthenticate(redirectUri?: string) {
@@ -36,38 +36,6 @@ export default function useAuthenticate(redirectUri?: string) {
     }
   }, [redirectUri])
 
-  /**
-   * Authenticate with Ethereum wallet
-   */
-  const authWithEthWallet = useCallback(
-    async (connector: any): Promise<void> => {
-      setLoading(true)
-      setError(undefined)
-      setAuthMethod(undefined)
-
-      try {
-        const { account, connector: activeConnector } = await connectAsync(
-          connector
-        )
-        const signer = await activeConnector.getSigner()
-        const signMessage = async (message: string) => {
-          const sig = await signer.signMessage(message)
-          return sig
-        }
-        const result: AuthMethod = (await authenticateWithEthWallet(
-          account,
-          signMessage
-        )) as AuthMethod
-        setAuthMethod(result)
-      } catch (err) {
-        setError(err as Error)
-      } finally {
-        setLoading(false)
-      }
-    },
-    [connectAsync]
-  )
-
   useEffect(() => {
     // Check if user is redirected from social login
     if (redirectUri && isSignInRedirect(redirectUri)) {
@@ -77,7 +45,6 @@ export default function useAuthenticate(redirectUri?: string) {
   }, [redirectUri, authWithGoogle])
 
   return {
-    authWithEthWallet,
     authMethod,
     loading,
     error,
