@@ -4,16 +4,20 @@ import useAuthenticate from "@/hooks/useAuthenticate"
 import useSession from "@/hooks/useSession"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useDisconnect } from "wagmi"
 import Image from "next/image"
 import { disconnectWeb3 } from "@lit-protocol/lit-node-client"
 import { LOCAL_STORAGE_KEYS } from "@lit-protocol/constants"
+import { AuthSig, SessionKeyPair } from "@lit-protocol/types"
 import { PKPClient } from "@lit-protocol/pkp-client"
+import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
+import { LIT_CHAINS } from "@/app/utils/constants"
 
 export default function Header() {
   const redirectUri = ORIGIN + "/"
-  const { disconnectAsync } = useDisconnect()
+  const [pkpClient, setPkpClient] = useState<PKPClient>()
+  const [pkpEthers, setPkpEthers] = useState<PKPEthersWallet>()
 
   const {
     authMethod,
@@ -54,12 +58,23 @@ export default function Header() {
     }
   }, [authMethod, account, initSession])
 
-  async function connectPKP() {
-    const pkpClient = new PKPClient({
+  useEffect(() => {
+    // If user is authenticated and has selected an account, initialize session
+    if (sessionSigs && sessionKey) {
+      console.log("Entered here")
+      connectPkpEthers()
+    }
+  }, [sessionKey, sessionSigs, connectPkpEthers])
+
+  async function connectPkpEthers() {
+    const pkpWallet = new PKPEthersWallet({
       controllerSessionSigs: sessionSigs,
-      pkpPubKey: account?.ethAddress as string,
+      // Or you can also pass in controllerSessionSigs
+      pkpPubKey: `0x${sessionKey.publicKey}`,
+      rpc: LIT_CHAINS.find((chain) => (chain.name = "Mumbai"))?.rpcUrls[0],
     })
-    await pkpClient.connect()
+    await pkpWallet.init()
+    console.log(pkpWallet)
   }
 
   async function handleGoogleLogin() {
