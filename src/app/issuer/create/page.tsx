@@ -11,7 +11,7 @@ import { useState } from "react"
 import { writeContract } from "@wagmi/core"
 import { useAccount } from "wagmi"
 import Input from "@/components/Input"
-import { Button, Card } from "@ensdomains/thorin"
+import { Button } from "@ensdomains/thorin"
 import Textarea from "@/components/Textarea"
 
 export default function CreateIssuer() {
@@ -38,7 +38,7 @@ export default function CreateIssuer() {
       <header className="h-32 flex items-center justify-center text-4xl">
         Create a profile
       </header>
-      <Card>
+      <div className="container">
         {responseBytes}
         <Input
           id="organization_name"
@@ -83,7 +83,7 @@ export default function CreateIssuer() {
             Create Issuer
           </Button>
         </div>
-      </Card>
+      </div>
     </div>
   )
 }

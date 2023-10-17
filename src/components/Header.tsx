@@ -5,13 +5,12 @@ import useSession from "@/hooks/useSession"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { useDisconnect } from "wagmi"
 import Image from "next/image"
 import { disconnectWeb3 } from "@lit-protocol/lit-node-client"
 import { LOCAL_STORAGE_KEYS } from "@lit-protocol/constants"
-import { AuthSig, SessionKeyPair } from "@lit-protocol/types"
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
-import { LIT_CHAINS } from "@/app/utils/constants"
+import usePkpEthers from "@/hooks/usePkpEthers"
+import useBiconomy from "@/hooks/useBiconomy"
 
 export default function Header() {
   const redirectUri = ORIGIN + "/"
@@ -37,6 +36,8 @@ export default function Header() {
     loading: sessionLoading,
     error: sessionError,
   } = useSession()
+  const { connect, pkpWallet } = usePkpEthers()
+  const { biconomy, init: initBiconomy, docissueContract } = useBiconomy()
   const router = useRouter()
 
   const error = authError || accountError || sessionError
@@ -58,22 +59,18 @@ export default function Header() {
 
   useEffect(() => {
     // If user is authenticated and has selected an account, initialize session
-    if (sessionSigs && sessionKey) {
+    if (sessionSigs && account) {
       console.log("Entered here")
-      connectPkpEthers()
+      connect(sessionSigs, account)
     }
-  }, [sessionKey, sessionSigs, connectPkpEthers])
+  }, [sessionSigs, account, connect])
 
-  async function connectPkpEthers() {
-    const pkpWallet = new PKPEthersWallet({
-      controllerSessionSigs: sessionSigs,
-      // Or you can also pass in controllerSessionSigs
-      pkpPubKey: `0x${sessionKey.publicKey}`,
-      rpc: LIT_CHAINS.find((chain) => (chain.name = "Mumbai"))?.rpcUrls[0],
-    })
-    await pkpWallet.init()
-    console.log(pkpWallet)
-  }
+  useEffect(() => {
+    if (pkpWallet) {
+      initBiconomy(pkpWallet)
+    }
+    console.log(biconomy)
+  }, [pkpWallet, initBiconomy])
 
   async function handleGoogleLogin() {
     await signInWithGoogle(redirectUri)
@@ -89,6 +86,7 @@ export default function Header() {
   }
 
   function ButtonText() {
+    console.log(sessionKey, account, sessionSigs, pkpWallet)
     if (authLoading || accountLoading || sessionLoading) {
       return (
         <div>
@@ -107,7 +105,7 @@ export default function Header() {
       <Link href={"/"} className="font-mono text-2xl">
         Docissue
       </Link>
-      <div className="flex items-center gap-6 font-mono">
+      <div className="flex items-center gap-6">
         <Link href={"/view"}>View Content</Link>
         <Link href={"/upload"}>Upload Content</Link>
         <Link href={"/issuer/create"}>Become an issuer</Link>
@@ -134,7 +132,6 @@ export default function Header() {
           </div>
           <ButtonText />
         </button>
-        {/* <w3m-button /> */}
       </div>
     </header>
   )

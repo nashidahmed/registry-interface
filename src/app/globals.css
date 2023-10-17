@@ -391,11 +391,12 @@ main {
 
 .container {
   width: 100%;
-  max-width: 32rem;
-  max-height: calc(100vh - 2rem);
+  display: flex;
+  flex-direction: column;
   background-color: white;
+  gap: 1rem;
   border: 1px solid var(--gray-200);
-  border-radius: 0.5rem;
+  border-radius: 1rem;
   padding: 1.5rem;
   overflow-y: auto;
 }
@@ -673,65 +674,4 @@ p.message-card__prompt {
   to {
     transform: rotate(1turn);
   }
-}
-
-.accounts-wrapper {
-  margin: 1rem 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.account-item {
-  font-size: 0.875rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  word-break: break-all;
-}
-
-.account-item__radio {
-  width: 1rem;
-  height: 1rem;
-  border: 1px solid var(--gray-500);
-  border-radius: 100%;
-  background-color: var(--gray-50);
-}
-
-.account-item__indicator {
-  width: 1rem;
-  height: 1rem;
-  position: relative;
-}
-
-.account-item__indicator::after {
-  content: "";
-  display: block;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 100%;
-  background-color: var(--primary);
-}
-
-.account-item--selected .account-item__label {
-  color: var(--primary-dark);
-}
-
-.account-item--selected .account-item__radio {
-  background-color: var(--primary-light);
-  border-color: var(--primary);
-}
-
-.sismoConnectButton {
-  background: red !important;
-}
-.sismoConnectButtonText {
-  color: blue !important;
-}
-.sismoConnectButtonLogo {
-  display: none;
 }

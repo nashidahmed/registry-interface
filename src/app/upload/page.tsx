@@ -2,19 +2,13 @@
 
 import docissueAbi from "/public/abis/Docissue.json"
 
-import {
-  Button,
-  FileInput,
-  VisuallyHidden,
-  Card,
-  Input,
-} from "@ensdomains/thorin"
+import { Button, FileInput, VisuallyHidden, Card } from "@ensdomains/thorin"
 import { ethers } from "ethers"
 import { FormEvent, useEffect, useState } from "react"
 import { useAccount } from "wagmi"
 import { writeContract } from "@wagmi/core"
 import { Web3Storage } from "web3.storage"
-// import lit from "/lib/lit"
+import Input from "@/components/Input"
 
 export default function Upload() {
   const { address } = useAccount()
@@ -61,11 +55,12 @@ export default function Upload() {
 
   return (
     <div className="px-96">
-      <header className="text-center pt-4 pb-8 text-2xl">
+      <header className="h-32 flex items-center justify-center text-4xl">
         Upload a document
       </header>
-      <Card>
+      <div className="container">
         <Input
+          id="title"
           label="Title"
           placeholder="Enter the document title"
           onChange={(e) => setTitle(e.target.value)}
@@ -85,7 +80,7 @@ export default function Upload() {
         <div className="mx-auto">
           <Button className="w-fit">Get Pub Key</Button>
         </div>
-      </Card>
+      </div>
     </div>
   )
 }
