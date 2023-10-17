@@ -10,7 +10,9 @@ import {
 import { useState } from "react"
 import { writeContract } from "@wagmi/core"
 import { useAccount } from "wagmi"
-import { Button, Card, Input } from "@ensdomains/thorin"
+import Input from "@/components/Input"
+import { Button, Card } from "@ensdomains/thorin"
+import Textarea from "@/components/Textarea"
 
 export default function CreateIssuer() {
   const [responseBytes, setResponseBytes] = useState("")
@@ -33,24 +35,34 @@ export default function CreateIssuer() {
 
   return (
     <div className="px-96">
-      <header className="h-32 flex items-center justify-center text-2xl">
+      <header className="h-32 flex items-center justify-center text-4xl">
         Create a profile
       </header>
       <Card>
         {responseBytes}
         <Input
-          label="Organization name"
-          placeholder="Enter your name"
+          id="organization_name"
+          label="Organization Name"
+          placeholder="XYZ University"
           onChange={(e) => setName(e.target.value)}
         />
+
         <Input
-          label="Website"
-          placeholder="Enter your website link"
+          id="website_link"
+          label="Website link"
+          placeholder="https://www.example.com/"
           onChange={(e) => setWebsite(e.target.value)}
         />
         <Input
-          label="Description"
-          placeholder="Enter a short description (Eg. Official account of University)"
+          id="image_link"
+          label="Image link (rounded)"
+          placeholder="https://www.example-host.com/image.png"
+          onChange={(e) => setWebsite(e.target.value)}
+        />
+        <Textarea
+          id="short_description"
+          label="Give a short description of your organization"
+          placeholder="Enter a short description (Eg. Official account of XYZ University)"
           onChange={(e) => setDesc(e.target.value)}
         />
         <div className="mx-auto">
@@ -63,6 +75,7 @@ export default function CreateIssuer() {
               setResponseBytes(bytes)
             }}
             text="Verify Twitter with Sismo"
+            overrideStyle={{ height: "2.25rem", fontSize: "1rem" }}
           />
         </div>
         <div className="mx-auto">

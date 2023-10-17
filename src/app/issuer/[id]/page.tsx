@@ -57,7 +57,7 @@ export default function View({ params }: { params: { id: string } }) {
       <div className="flex justify-between items-center">
         <div className="text-5xl">
           <div className="flex gap-4 items-center">
-            <div className="w-20">
+            <div className="w-32">
               <Avatar
                 label="Noun 97 circle"
                 shape="circle"

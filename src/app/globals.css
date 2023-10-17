@@ -725,3 +725,13 @@ p.message-card__prompt {
   background-color: var(--primary-light);
   border-color: var(--primary);
 }
+
+.sismoConnectButton {
+  background: red !important;
+}
+.sismoConnectButtonText {
+  color: blue !important;
+}
+.sismoConnectButtonLogo {
+  display: none;
+}
