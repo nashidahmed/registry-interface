@@ -8,14 +8,13 @@ import {
   VisuallyHidden,
   Card,
   Input,
-  CloseSVG,
 } from "@ensdomains/thorin"
 import { ethers } from "ethers"
 import { FormEvent, useEffect, useState } from "react"
 import { useAccount } from "wagmi"
 import { writeContract } from "@wagmi/core"
 import { Web3Storage } from "web3.storage"
-import lit from "/lib/lit"
+// import lit from "/lib/lit"
 
 export default function Upload() {
   const { address } = useAccount()
@@ -26,7 +25,7 @@ export default function Upload() {
 
   useEffect(() => {})
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent) {
     // don't reload the page!
     event.preventDefault()
     console.log(`Uploading to Filecoin...`)
@@ -37,7 +36,7 @@ export default function Upload() {
 
     console.log(file)
 
-    const cid = await client.put([file], {
+    const cid = await client.put([new File([file as File], "test")], {
       onRootCidReady: (localCid: string) => {
         setCid(localCid)
       },
@@ -56,9 +55,9 @@ export default function Upload() {
     console.log(hash)
   }
 
-  async function getPubKey() {
-    await lit.encryptFile(title)
-  }
+  // async function getPubKey() {
+  //   await lit.encryptFile(title)
+  // }
 
   return (
     <div className="px-96">
@@ -84,9 +83,7 @@ export default function Upload() {
           </Button>
         </div>
         <div className="mx-auto">
-          <Button className="w-fit" onClick={getPubKey}>
-            Get Pub Key
-          </Button>
+          <Button className="w-fit">Get Pub Key</Button>
         </div>
       </Card>
     </div>

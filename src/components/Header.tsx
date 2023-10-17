@@ -83,7 +83,9 @@ export default function Header() {
     disconnectWeb3()
     setAccount(undefined)
     setSessionSigs(undefined)
-    localStorage.removeItem(LOCAL_STORAGE_KEYS.SESSION_KEY)
+    typeof window !== "undefined"
+      ? localStorage.removeItem(LOCAL_STORAGE_KEYS.SESSION_KEY)
+      : undefined
   }
 
   function ButtonText() {

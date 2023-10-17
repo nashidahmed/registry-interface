@@ -21,7 +21,8 @@
     "paths": {
       "@/*": ["./src/*", "./src/app/*"],
       "/*": ["./*"],
-      "@ensdomains/thorin": ["./node_modules/@ensdomains/thorin"]
+      "@ensdomains/thorin": ["./node_modules/@ensdomains/thorin"],
+      "web3.storage": ["./node_modules/web3.storage"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

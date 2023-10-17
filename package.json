@@ -21,7 +21,7 @@
     "@stytch/vanilla-js": "^3.0.1",
     "@tableland/sdk": "^4.5.3-dev.0",
     "@web3modal/wagmi": "^3.1.0",
-    "ethers": "^6.8.0",
+    "ethers": "5",
     "minimist": "^1.2.5",
     "next": "13.5.4",
     "prompts": "^2.4.2",

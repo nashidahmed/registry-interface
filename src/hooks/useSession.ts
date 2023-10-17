@@ -8,8 +8,11 @@ import { LOCAL_STORAGE_KEYS } from "@lit-protocol/constants"
 
 export default function useSession() {
   const sessionKey: SessionKeyPair =
-    localStorage.getItem(LOCAL_STORAGE_KEYS.SESSION_KEY) || ""
-      ? JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEYS.SESSION_KEY) || "")
+    typeof window !== "undefined"
+      ? localStorage.getItem(LOCAL_STORAGE_KEYS.SESSION_KEY) &&
+        JSON.parse(
+          localStorage.getItem(LOCAL_STORAGE_KEYS.SESSION_KEY) as string
+        )
       : undefined
   const [sessionSigs, setSessionSigs] = useState<SessionSigs>()
   const [loading, setLoading] = useState<boolean>(false)
