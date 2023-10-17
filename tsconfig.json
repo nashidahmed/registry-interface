@@ -21,7 +21,6 @@
     "paths": {
       "@/*": ["./src/*", "./src/app/*"],
       "/*": ["./*"],
-      "@ensdomains/thorin": ["./node_modules/@ensdomains/thorin"],
       "web3.storage": ["./node_modules/web3.storage"]
     }
   },

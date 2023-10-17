@@ -3,17 +3,17 @@ import useAccount from "@/hooks/useAccount"
 import useAuthenticate from "@/hooks/useAuthenticate"
 import useSession from "@/hooks/useSession"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import { disconnectWeb3 } from "@lit-protocol/lit-node-client"
 import { LOCAL_STORAGE_KEYS } from "@lit-protocol/constants"
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
 import usePkpEthers from "@/hooks/usePkpEthers"
-import useBiconomy from "@/hooks/useBiconomy"
 
 export default function Header() {
-  const redirectUri = ORIGIN + "/"
+  const pathname = usePathname()
+  const redirectUri = ORIGIN + pathname
   const [pkpEthers, setPkpEthers] = useState<PKPEthersWallet>()
 
   const {
@@ -37,7 +37,6 @@ export default function Header() {
     error: sessionError,
   } = useSession()
   const { connect, pkpWallet } = usePkpEthers()
-  const { biconomy, init: initBiconomy, docissueContract } = useBiconomy()
   const router = useRouter()
 
   const error = authError || accountError || sessionError
@@ -59,18 +58,12 @@ export default function Header() {
 
   useEffect(() => {
     // If user is authenticated and has selected an account, initialize session
+    console.log(sessionSigs, account)
     if (sessionSigs && account) {
       console.log("Entered here")
       connect(sessionSigs, account)
     }
   }, [sessionSigs, account, connect])
-
-  useEffect(() => {
-    if (pkpWallet) {
-      initBiconomy(pkpWallet)
-    }
-    console.log(biconomy)
-  }, [pkpWallet, initBiconomy])
 
   async function handleGoogleLogin() {
     await signInWithGoogle(redirectUri)
@@ -86,14 +79,13 @@ export default function Header() {
   }
 
   function ButtonText() {
-    console.log(sessionKey, account, sessionSigs, pkpWallet)
     if (authLoading || accountLoading || sessionLoading) {
       return (
         <div>
           <div className="loader w-6 h-6"></div>
         </div>
       )
-    } else if (sessionKey || (account && sessionSigs)) {
+    } else if (pkpWallet) {
       return <span>Sign out</span>
     } else {
       return <span>Sign in with Google</span>
@@ -117,11 +109,7 @@ export default function Header() {
               : "bg-gray-100"
           } text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded-full shadow`}
           disabled={authLoading || accountLoading || sessionLoading}
-          onClick={
-            sessionKey || (account && sessionSigs)
-              ? handleLogout
-              : handleGoogleLogin
-          }
+          onClick={pkpWallet ? handleLogout : handleGoogleLogin}
         >
           <div className="btn__icon">
             <Image

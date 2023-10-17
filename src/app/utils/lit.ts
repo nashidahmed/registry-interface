@@ -86,12 +86,15 @@ export async function getSessionSigs({
   sessionSigsParams: GetSessionSigsProps
 }): Promise<SessionSigs> {
   const provider = getProviderByAuthMethod(authMethod)
+  console.log(provider)
   if (provider) {
     const sessionSigs = await provider.getSessionSigs({
       pkpPublicKey,
       authMethod,
       sessionSigsParams,
     })
+    console.log(sessionSigs)
+
     return sessionSigs
   } else {
     throw new Error(

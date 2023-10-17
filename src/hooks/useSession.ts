@@ -39,6 +39,7 @@ export default function useSession() {
           Date.now() + 1000 * 60 * 60 * 24 * 7
         ).toISOString() // 1 week
 
+        console.log(pkp, authMethod)
         // Generate session sigs
         const sessionSigs = await getSessionSigs({
           pkpPublicKey: pkp.publicKey,
@@ -49,9 +50,12 @@ export default function useSession() {
             resourceAbilityRequests: resourceAbilities,
           },
         })
+        console.log("----------  2 --------------")
 
+        console.log(sessionSigs)
         setSessionSigs(sessionSigs)
       } catch (err) {
+        console.log(error)
         setError(err as Error)
       } finally {
         setLoading(false)

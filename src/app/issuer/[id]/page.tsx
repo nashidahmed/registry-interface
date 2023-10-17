@@ -1,6 +1,5 @@
 "use client"
 
-import { Avatar, Button, Card } from "@ensdomains/thorin"
 import { Database } from "@tableland/sdk"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -53,16 +52,16 @@ export default function View({ params }: { params: { id: string } }) {
   // }, [params.id, getIssuer])
 
   return (
-    <Card className="mx-96 pt-8">
+    <div className="container mx-96 pt-8">
       <div className="flex justify-between items-center">
         <div className="text-5xl">
           <div className="flex gap-4 items-center">
             <div className="w-32">
-              <Avatar
+              {/* <Avatar
                 label="Noun 97 circle"
                 shape="circle"
                 src={issuer.image}
-              />
+              /> */}
             </div>
             {issuer?.name}
             <object
@@ -110,6 +109,6 @@ export default function View({ params }: { params: { id: string } }) {
         <br />
         {issuer?.description}
       </div>
-    </Card>
+    </div>
   )
 }

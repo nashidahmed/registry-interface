@@ -11,7 +11,6 @@ import { useState } from "react"
 import { writeContract } from "@wagmi/core"
 import { useAccount } from "wagmi"
 import Input from "@/components/Input"
-import { Button } from "@ensdomains/thorin"
 import Textarea from "@/components/Textarea"
 
 export default function CreateIssuer() {
@@ -79,9 +78,9 @@ export default function CreateIssuer() {
           />
         </div>
         <div className="mx-auto">
-          <Button className="w-fit" onClick={createIssuer}>
+          <button className="w-fit" onClick={createIssuer}>
             Create Issuer
-          </Button>
+          </button>
         </div>
       </div>
     </div>

@@ -5,26 +5,23 @@ import "./globals.css"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 
-import { createWeb3Modal } from "@web3modal/wagmi/react"
-import { walletConnectProvider, EIP6963Connector } from "@web3modal/wagmi"
-
 import { WagmiConfig, configureChains, createConfig } from "wagmi"
 import { publicProvider } from "wagmi/providers/public"
 import { mainnet, polygonMumbai } from "wagmi/chains"
-import { InjectedConnector } from "wagmi/connectors/injected"
-import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
-import { ThemeProvider } from "styled-components"
-import { ThorinGlobalStyles, lightTheme } from "@ensdomains/thorin"
-import { StytchProvider } from "@stytch/nextjs"
-import { createStytchUIClient } from "@stytch/nextjs/ui"
+import { infuraProvider } from "wagmi/providers/infura"
 
 // 1. Get projectId
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string
+// const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string
 
 // 2. Create wagmiConfig
 const { chains, publicClient } = configureChains(
   [polygonMumbai, mainnet],
-  [walletConnectProvider({ projectId }), publicProvider()]
+  [
+    infuraProvider({
+      apiKey: process.env.NEXT_PUBLIC_INFURA_API_KEY as string,
+    }),
+    publicProvider(),
+  ]
 )
 
 const appData = {
@@ -34,25 +31,11 @@ const appData = {
 
 const wagmiConfig = createConfig({
   autoConnect: true,
-  connectors: [
-    new WalletConnectConnector({
-      chains,
-      options: { projectId, showQrModal: false, metadata: appData },
-    }),
-    new EIP6963Connector({ chains }),
-    new InjectedConnector({ chains, options: { shimDisconnect: true } }),
-  ],
+  connectors: [],
   publicClient,
 })
 
-// 3. Create modal
-createWeb3Modal({ wagmiConfig, projectId, chains, themeMode: "light" })
-
 const inter = Inter({ subsets: ["latin"] })
-
-const stytch = createStytchUIClient(
-  process.env.NEXT_PUBLIC_STYTCH_PUBLIC_TOKEN || ""
-)
 
 // export const metadata: Metadata = {
 //   title: "Create Next App",
@@ -67,17 +50,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <StytchProvider stytch={stytch}>
-          <WagmiConfig config={wagmiConfig}>
-            <ThemeProvider theme={lightTheme}>
-              <ThorinGlobalStyles />
-              <div className="min-h-screen px-24">
-                <Header />
-                {children}
-              </div>
-            </ThemeProvider>
-          </WagmiConfig>
-        </StytchProvider>
+        <WagmiConfig config={wagmiConfig}>
+          <div className="min-h-screen px-24">
+            <Header />
+            {children}
+          </div>
+        </WagmiConfig>
       </body>
     </html>
   )

@@ -2,7 +2,6 @@
 
 import docissueAbi from "/public/abis/Docissue.json"
 
-import { Button, FileInput, VisuallyHidden, Card } from "@ensdomains/thorin"
 import { ethers } from "ethers"
 import { FormEvent, useEffect, useState } from "react"
 import { useAccount } from "wagmi"
@@ -73,12 +72,12 @@ export default function Upload() {
           required
         />
         <div className="mx-auto">
-          <Button className="w-fit" onClick={handleSubmit}>
+          <button className="w-fit" onClick={handleSubmit}>
             Upload document
-          </Button>
+          </button>
         </div>
         <div className="mx-auto">
-          <Button className="w-fit">Get Pub Key</Button>
+          <button className="w-fit">Get Pub Key</button>
         </div>
       </div>
     </div>

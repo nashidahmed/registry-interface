@@ -1,6 +1,6 @@
 import { LIT_CHAINS } from "@/utils/constants"
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { SessionSigs, IRelayPKP } from "@lit-protocol/types"
 
 export default function usePkpEthers() {
@@ -20,6 +20,8 @@ export default function usePkpEthers() {
           rpc: process.env.NEXT_PUBLIC_INFURA_RPC,
         })
         await wallet.init()
+        localStorage.setItem("pkpWallet", JSON.stringify(wallet))
+        console.log(wallet)
         setPkpWallet(wallet)
       } catch (err) {
         setError(err as Error)
@@ -29,6 +31,14 @@ export default function usePkpEthers() {
     },
     []
   )
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (localStorage.getItem("pkpWallet") && !pkpWallet) {
+        setPkpWallet(pkpWallet)
+      }
+    }
+  }, [pkpWallet])
 
   return {
     connect,
