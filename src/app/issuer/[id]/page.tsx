@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@ensdomains/thorin"
+import { Avatar, Button, Card } from "@ensdomains/thorin"
 import { Database } from "@tableland/sdk"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -11,6 +11,7 @@ interface Issuer {
   website: string
   description: string
   twitter: string
+  image: string
 }
 
 export default function View({ params }: { params: { id: string } }) {
@@ -21,6 +22,8 @@ export default function View({ params }: { params: { id: string } }) {
     name: "Test",
     twitter: "0x1002000000000000000001077920025070120960",
     website: "https://www.test.com",
+    image:
+      "https://futuretechnologies.njit.edu/sites/futuretechnologies/files/njit%20logo_0.png",
   })
   const appId = "0x1002"
   const tableName: string = process.env.NEXT_PUBLIC_ISSERS_TABLE_NAME as string // Our pre-defined health check table
@@ -50,10 +53,17 @@ export default function View({ params }: { params: { id: string } }) {
   // }, [params.id, getIssuer])
 
   return (
-    <div className="mx-96 pt-8">
-      <div className="flex justify-between items-end">
+    <Card className="mx-96 pt-8">
+      <div className="flex justify-between items-center">
         <div className="text-5xl">
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-center">
+            <div className="w-20">
+              <Avatar
+                label="Noun 97 circle"
+                shape="circle"
+                src={issuer.image}
+              />
+            </div>
             {issuer?.name}
             <object
               className="w-8"
@@ -100,6 +110,6 @@ export default function View({ params }: { params: { id: string } }) {
         <br />
         {issuer?.description}
       </div>
-    </div>
+    </Card>
   )
 }

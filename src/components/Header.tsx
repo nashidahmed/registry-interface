@@ -10,13 +10,11 @@ import Image from "next/image"
 import { disconnectWeb3 } from "@lit-protocol/lit-node-client"
 import { LOCAL_STORAGE_KEYS } from "@lit-protocol/constants"
 import { AuthSig, SessionKeyPair } from "@lit-protocol/types"
-import { PKPClient } from "@lit-protocol/pkp-client"
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
 import { LIT_CHAINS } from "@/app/utils/constants"
 
 export default function Header() {
   const redirectUri = ORIGIN + "/"
-  const [pkpClient, setPkpClient] = useState<PKPClient>()
   const [pkpEthers, setPkpEthers] = useState<PKPEthersWallet>()
 
   const {
