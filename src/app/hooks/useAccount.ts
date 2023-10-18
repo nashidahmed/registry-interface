@@ -1,12 +1,14 @@
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { AuthMethod } from "@lit-protocol/types"
 import Lit from "@/utils/lit"
 import { IRelayPKP } from "@lit-protocol/types"
+import { useRouter } from "next/navigation"
 
-export default function useAccount() {
+export default function useAccount(authMethod?: AuthMethod) {
   const [account, setAccount] = useState<IRelayPKP>()
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error>()
+  const router = useRouter()
 
   /**
    * Fetch PKPs tied to given auth method
@@ -32,6 +34,15 @@ export default function useAccount() {
     },
     []
   )
+
+  useEffect(() => {
+    // If user is authenticated, fetch accounts
+    if (authMethod) {
+      console.log(authMethod, account)
+      router.replace(window.location.pathname, undefined)
+      fetchAccount(authMethod)
+    }
+  }, [authMethod])
 
   return {
     fetchAccount,

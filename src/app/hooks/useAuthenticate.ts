@@ -9,13 +9,6 @@ export default function useAuthenticate(redirectUri?: string) {
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error>()
 
-  // wagmi hook
-  const { connectAsync } = useConnect({
-    onError: (err: unknown) => {
-      setError(err as Error)
-    },
-  })
-
   /**
    * Handle redirect from Google OAuth
    */
@@ -26,8 +19,9 @@ export default function useAuthenticate(redirectUri?: string) {
 
     try {
       const result: AuthMethod = (await Lit.authenticateWithGoogle(
-        redirectUri as any
-      )) as any
+        redirectUri as string
+      )) as AuthMethod
+      console.log(result)
       setAuthMethod(result)
     } catch (err) {
       setError(err as Error)
@@ -42,7 +36,8 @@ export default function useAuthenticate(redirectUri?: string) {
       // If redirected, authenticate with social provider
       authWithGoogle()
     }
-  }, [redirectUri, authWithGoogle])
+    console.log(authMethod)
+  }, [redirectUri])
 
   return {
     authMethod,

@@ -9,15 +9,20 @@ import {
 } from "@sismo-core/sismo-connect-react"
 import { useState } from "react"
 import { writeContract } from "@wagmi/core"
-import { useAccount } from "wagmi"
 import Input from "@/components/Input"
 import Textarea from "@/components/Textarea"
 import { ethers } from "ethers"
 import Button from "@/components/Button"
+import useAuthenticate from "@/hooks/useAuthenticate"
+import useAccount from "@/hooks/useAccount"
+import useSession from "@/hooks/useSession"
 
 export default function CreateIssuer() {
+  const { authMethod } = useAuthenticate()
+  const { account } = useAccount()
+  const { initSession } = useSession()
+
   const [responseBytes, setResponseBytes] = useState("")
-  const { address } = useAccount()
   const [name, setName] = useState("")
   const [website, setWebsite] = useState("")
   const [image, setImage] = useState("")
@@ -72,6 +77,14 @@ export default function CreateIssuer() {
     // console.log(hash)
   }
 
+  function init() {
+    console.log("----------------", authMethod, account)
+    // If user is authenticated and has selected an account, initialize session
+    if (authMethod && account) {
+      initSession(authMethod, account)
+    }
+  }
+
   return (
     <div className="px-96">
       <header className="h-32 flex items-center justify-center text-4xl">
@@ -118,6 +131,10 @@ export default function CreateIssuer() {
         </div>
         <div className="mx-auto">
           <Button onClick={createIssuer}>Create Profile</Button>
+        </div>
+
+        <div className="mx-auto">
+          <Button onClick={() => init()}>Init session</Button>
         </div>
       </div>
     </div>

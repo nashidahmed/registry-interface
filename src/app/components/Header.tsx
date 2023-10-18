@@ -27,7 +27,7 @@ export default function Header() {
     setAccount,
     loading: accountLoading,
     error: accountError,
-  } = useAccount()
+  } = useAccount(authMethod)
   const {
     initSession,
     sessionKey,
@@ -41,22 +41,22 @@ export default function Header() {
 
   const error = authError || accountError || sessionError
 
-  useEffect(() => {
-    // If user is authenticated, fetch accounts
-    if (authMethod) {
-      console.log(authMethod, account)
-      router.replace(window.location.pathname, undefined)
-      fetchAccount(authMethod)
-    }
-  }, [authMethod, fetchAccount])
+  // useEffect(() => {
+  //   // If user is authenticated, fetch accounts
+  //   if (authMethod) {
+  //     console.log(authMethod, account)
+  //     router.replace(window.location.pathname, undefined)
+  //     fetchAccount(authMethod)
+  //   }
+  // }, [authMethod, fetchAccount])
 
-  useEffect(() => {
-    console.log("----------------", authMethod, account)
-    // If user is authenticated and has selected an account, initialize session
-    if (authMethod && account) {
-      initSession(authMethod, account)
-    }
-  }, [authMethod, account, initSession])
+  // useEffect(() => {
+  //   console.log("----------------", authMethod, account)
+  //   // If user is authenticated and has selected an account, initialize session
+  //   if (authMethod && account) {
+  //     initSession(authMethod, account)
+  //   }
+  // }, [authMethod, account, initSession])
 
   // useEffect(() => {
   //   // If user is authenticated and has selected an account, initialize session

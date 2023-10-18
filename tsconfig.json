@@ -19,7 +19,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*", "./src/app/*"],
+      "@/*": ["./src/app/*"],
       "/*": ["./*"],
       "web3.storage": ["./node_modules/web3.storage"]
     }
