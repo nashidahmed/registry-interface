@@ -11,7 +11,11 @@ import {
   IRelayPKP,
   ProviderOptions,
   SessionSigs,
+  ClaimRequest,
+  ClaimKeyResponse,
 } from "@lit-protocol/types"
+import * as jose from "jose"
+import { ethers } from "ethers"
 
 export const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || "localhost"
 export const ORIGIN =
@@ -53,24 +57,62 @@ export async function authenticateWithGoogle(
 }
 
 /**
- * Get auth method object by signing a message with an Ethereum wallet
+ * Get auth method object from redirect
  */
-export async function authenticateWithEthWallet(
-  address?: string,
-  signMessage?: (message: string) => Promise<string>
-): Promise<AuthMethod | undefined> {
-  const ethWalletProvider = litAuthClient.initProvider<EthWalletProvider>(
-    ProviderType.EthWallet,
-    {
-      domain: DOMAIN,
-      origin: ORIGIN,
-    }
+export async function authenticate(token: string): Promise<ClaimKeyResponse> {
+  // const tokenPayload = jose.decodeJwt(authMethod.accessToken)
+  // const userId: string = tokenPayload["sub"] as string
+  // const audience: string = tokenPayload["aud"] as string
+  // const authMethodId = ethers.utils.keccak256(
+  //   ethers.utils.toUtf8Bytes(`${userId}:${audience}`)
+  // )
+
+  // session.claimKeyId()
+
+  await litNodeClient.connect()
+
+  // const session = litAuthClient.initProvider<GoogleProvider>(
+  //   ProviderType.Google,
+  //   {
+  //     appId:
+  //       "355007986731-llbjq5kbsg8ieb705mo64nfnh88dhlmn.apps.googleusercontent.com",
+  //     userId: "108320763296956109044",
+  //   }
+  // )
+  let authMethod: AuthMethod = {
+    authMethodType: AuthMethodType.GoogleJwt, // also AuthMethodType.GoogleJwt is same result
+    accessToken: token,
+  }
+
+  let claimReq = {
+    authMethod,
+    relayApiKey: process.env.NEXT_PUBLIC_LIT_RELAY_API_KEY,
+  }
+
+  const res: ClaimKeyResponse = await litNodeClient.claimKeyId(claimReq)
+  console.log(res)
+  return res
+}
+
+export async function computeKey() {
+  await litNodeClient.connect()
+  // const session = litAuthClient.initProvider<GoogleProvider>(
+  //   ProviderType.Google,
+  //   {
+  //     userId: "108320763296956109044",
+  //     appId:
+  //       "355007986731-llbjq5kbsg8ieb705mo64nfnh88dhlmn.apps.googleusercontent.com",
+  //   }
+  // )
+
+  const keyId = litNodeClient.computeHDKeyId(
+    "108320763296956109044",
+    "355007986731-llbjq5kbsg8ieb705mo64nfnh88dhlmn.apps.googleusercontent.com"
   )
-  const authMethod = await ethWalletProvider.authenticate({
-    address,
-    signMessage,
-  })
-  return authMethod
+  console.log(keyId)
+  // the key id can now be given to the public key calculation method
+  const publicKey = litNodeClient.computeHDPubKey(keyId)
+  console.log("user public key will be: ", publicKey)
 }
 
 /**

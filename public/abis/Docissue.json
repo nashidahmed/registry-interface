@@ -47,6 +47,11 @@
         "internalType": "string",
         "name": "description",
         "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "image",
+        "type": "string"
       }
     ],
     "name": "createIssuer",
@@ -85,24 +90,6 @@
         "type": "bytes4"
       }
     ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "title",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "cid",
-        "type": "string"
-      }
-    ],
-    "name": "uploadDocument",
-    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -166,6 +153,19 @@
   },
   {
     "inputs": [],
+    "name": "docTableId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "IS_IMPERSONATION_MODE",
     "outputs": [
       {
@@ -179,7 +179,7 @@
   },
   {
     "inputs": [],
-    "name": "SISMO_CONNECT_LIB_VERSION",
+    "name": "issuerTableId",
     "outputs": [
       {
         "internalType": "uint256",
@@ -192,7 +192,7 @@
   },
   {
     "inputs": [],
-    "name": "tableId",
+    "name": "SISMO_CONNECT_LIB_VERSION",
     "outputs": [
       {
         "internalType": "uint256",

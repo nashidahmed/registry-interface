@@ -12,24 +12,64 @@ import { writeContract } from "@wagmi/core"
 import { useAccount } from "wagmi"
 import Input from "@/components/Input"
 import Textarea from "@/components/Textarea"
+import { ethers } from "ethers"
+import Button from "@/components/Button"
 
 export default function CreateIssuer() {
   const [responseBytes, setResponseBytes] = useState("")
   const { address } = useAccount()
   const [name, setName] = useState("")
   const [website, setWebsite] = useState("")
+  const [image, setImage] = useState("")
   const [desc, setDesc] = useState("")
 
   async function createIssuer() {
-    const { hash } = await writeContract({
-      address: process.env
-        .NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS as `0x${string}`,
-      abi: docissueAbi,
-      functionName: "createIssuer",
-      args: [responseBytes, name, website, desc],
-    })
+    const provider = new ethers.providers.JsonRpcProvider(
+      process.env.NEXT_PUBLIC_INFURA_RPC
+    )
+    const signer = new ethers.Wallet(
+      process.env.NEXT_PUBLIC_PRIVATE_KEY as string,
+      provider
+    )
 
-    console.log(hash)
+    let contractInterface = new ethers.Contract(
+      process.env.NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS as string,
+      docissueAbi,
+      signer
+    )
+    // let functionSignature = contractInterface.encodeFunctionData(
+    //   "createIssuer",
+    //   [responseBytes, name, website, desc]
+    // )
+    // let rawTx = {
+    //   to: process.env.NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS,
+    //   data: functionSignature,
+    //   from: "0xd697b55Daf2add294F8f1C58377253573E5A61c8",
+    // }
+    // let signedTx = await signer.signTransaction(rawTx);
+    // const tx = await signer.sendTransaction({
+    //   to: "0x160877899134C796E7eeA983364F88e0d1Fb0252",
+    //   value: ethers.utils.parseUnits("0.001", "ether"),
+    // })
+    console.log(
+      await contractInterface.createIssuer(
+        responseBytes,
+        name,
+        website,
+        image,
+        desc
+      )
+    )
+
+    // const { hash } = await writeContract({
+    //   address: process.env
+    //     .NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS as `0x${string}`,
+    //   abi: docissueAbi,
+    //   functionName: "createIssuer",
+    //   args: [responseBytes, name, website, desc],
+    // })
+
+    // console.log(hash)
   }
 
   return (
@@ -38,7 +78,6 @@ export default function CreateIssuer() {
         Create a profile
       </header>
       <div className="container">
-        {responseBytes}
         <Input
           id="organization_name"
           label="Organization Name"
@@ -56,7 +95,7 @@ export default function CreateIssuer() {
           id="image_link"
           label="Image link (rounded)"
           placeholder="https://www.example-host.com/image.png"
-          onChange={(e) => setWebsite(e.target.value)}
+          onChange={(e) => setImage(e.target.value)}
         />
         <Textarea
           id="short_description"
@@ -78,9 +117,7 @@ export default function CreateIssuer() {
           />
         </div>
         <div className="mx-auto">
-          <button className="w-fit" onClick={createIssuer}>
-            Create Issuer
-          </button>
+          <Button onClick={createIssuer}>Create Profile</Button>
         </div>
       </div>
     </div>

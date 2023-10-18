@@ -44,6 +44,7 @@ export default function Header() {
   useEffect(() => {
     // If user is authenticated, fetch accounts
     if (authMethod) {
+      console.log(authMethod)
       router.replace(window.location.pathname, undefined)
       fetchAccount(authMethod)
     }
