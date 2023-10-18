@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
 import { AuthMethod } from "@lit-protocol/types"
-import { getPKPs, mintPKP } from "@/utils/lit"
+import Lit from "@/utils/lit"
 import { IRelayPKP } from "@lit-protocol/types"
 
 export default function useAccount() {
@@ -17,11 +17,11 @@ export default function useAccount() {
       setError(undefined)
       try {
         // Fetch PKPs tied to given auth method
-        const myPKPs = await getPKPs(authMethod)
+        const myPKPs = await Lit.getPKPs(authMethod)
         if (myPKPs.length > 0) {
           setAccount(myPKPs[0])
         } else {
-          const newPKP = await mintPKP(authMethod)
+          const newPKP = await Lit.mintPKP(authMethod)
           setAccount(newPKP)
         }
       } catch (err) {

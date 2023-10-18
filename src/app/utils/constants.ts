@@ -1,5 +1,4 @@
 export const STATE_KEY = "lit-state"
-export const WALLETCONNECT_KEY = "walletconnect"
 
 export const DEFAULT_CHAIN_ID = 80001
 export const LIT_CHAINS = [
@@ -72,8 +71,6 @@ export const INITIAL_APP_STATE = {
   sessionExpiration: null,
   appChainId: DEFAULT_CHAIN_ID,
   appChains: LIT_CHAINS,
-  wcConnector: null,
-  wcRequests: [],
 }
 
 // export const AuthMethodTypes = {

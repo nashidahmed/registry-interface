@@ -9,7 +9,7 @@ import { writeContract } from "@wagmi/core"
 import { Web3Storage } from "web3.storage"
 import Input from "@/components/Input"
 import Button from "@/components/Button"
-import { authenticate, computeKey } from "@/utils/lit"
+import Lit from "@/utils/lit"
 
 export default function Upload() {
   const { address } = useAccount()
@@ -35,7 +35,7 @@ export default function Upload() {
   }
 
   async function test() {
-    authenticate(title)
+    // Lit.authenticate(title)
   }
 
   // async function handleSubmit(event: FormEvent) {
@@ -101,7 +101,7 @@ export default function Upload() {
           <Button onClick={test}>Test</Button>
         </div>
         <div className="mx-auto mt-8">
-          <Button onClick={computeKey}>Computer Key</Button>
+          <Button onClick={Lit.computeKey}>Computer Key</Button>
         </div>
       </div>
     </div>

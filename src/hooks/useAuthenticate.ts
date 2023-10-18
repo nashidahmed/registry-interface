@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { isSignInRedirect } from "@lit-protocol/lit-auth-client"
 import { AuthMethod } from "@lit-protocol/types"
-import { authenticateWithGoogle } from "@/utils/lit"
+import Lit from "@/utils/lit"
 import { useConnect } from "wagmi"
 
 export default function useAuthenticate(redirectUri?: string) {
@@ -25,7 +25,7 @@ export default function useAuthenticate(redirectUri?: string) {
     setAuthMethod(undefined)
 
     try {
-      const result: AuthMethod = (await authenticateWithGoogle(
+      const result: AuthMethod = (await Lit.authenticateWithGoogle(
         redirectUri as any
       )) as any
       setAuthMethod(result)

@@ -1,4 +1,4 @@
-import { ORIGIN, signInWithGoogle } from "@/utils/lit"
+import Lit from "@/utils/lit"
 import useAccount from "@/hooks/useAccount"
 import useAuthenticate from "@/hooks/useAuthenticate"
 import useSession from "@/hooks/useSession"
@@ -13,7 +13,7 @@ import usePkpEthers from "@/hooks/usePkpEthers"
 
 export default function Header() {
   const pathname = usePathname()
-  const redirectUri = ORIGIN + pathname
+  const redirectUri = Lit.ORIGIN + pathname
   const [pkpEthers, setPkpEthers] = useState<PKPEthersWallet>()
 
   const {
@@ -44,30 +44,31 @@ export default function Header() {
   useEffect(() => {
     // If user is authenticated, fetch accounts
     if (authMethod) {
-      console.log(authMethod)
+      console.log(authMethod, account)
       router.replace(window.location.pathname, undefined)
       fetchAccount(authMethod)
     }
   }, [authMethod, fetchAccount])
 
   useEffect(() => {
+    console.log("----------------", authMethod, account)
     // If user is authenticated and has selected an account, initialize session
     if (authMethod && account) {
       initSession(authMethod, account)
     }
   }, [authMethod, account, initSession])
 
-  useEffect(() => {
-    // If user is authenticated and has selected an account, initialize session
-    console.log(sessionSigs, account)
-    if (sessionSigs && account) {
-      console.log("Entered here")
-      connect(sessionSigs, account)
-    }
-  }, [sessionSigs, account, connect])
+  // useEffect(() => {
+  //   // If user is authenticated and has selected an account, initialize session
+  //   console.log(sessionSigs, account)
+  //   if (sessionSigs && account) {
+  //     console.log("Entered here")
+  //     connect(sessionSigs, account)
+  //   }
+  // }, [sessionSigs, account, connect])
 
   async function handleGoogleLogin() {
-    await signInWithGoogle(redirectUri)
+    await Lit.signInWithGoogle(redirectUri)
   }
 
   async function handleLogout() {
