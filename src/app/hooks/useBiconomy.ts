@@ -27,7 +27,7 @@ const baseURL = "https://api.biconomy.io"
 const networkId = 80001
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 const theRegistryContract = process.env
-  .NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS as string
+  .NEXT_PUBLIC_THE_REGISTRY_CONTRACT_ADDRESS as string
 
 export default function useBiconomy() {
   const [loading, setLoading] = useState<boolean>(false)

@@ -64,7 +64,7 @@ export default function Upload() {
 
   //   const { hash } = await writeContract({
   //     address: process.env
-  //       .NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS as `0x${string}`,
+  //       .NEXT_PUBLIC_THE_REGISTRY_CONTRACT_ADDRESS as `0x${string}`,
   //     abi: theRegistryAbi,
   //     functionName: "uploadDocument",
   //     args: [title, cid],

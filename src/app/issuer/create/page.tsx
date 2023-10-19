@@ -25,7 +25,7 @@ export default function CreateIssuer() {
   const { submitWithPersonalSign, loading, txHash } = useBiconomy()
 
   const theRegistryContract = process.env
-    .NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS as string
+    .NEXT_PUBLIC_THE_REGISTRY_CONTRACT_ADDRESS as string
 
   const [responseBytes, setResponseBytes] = useState("")
   const [name, setName] = useState("")
