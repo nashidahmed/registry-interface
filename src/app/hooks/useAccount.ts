@@ -27,6 +27,8 @@ export default function useAccount(authMethod?: AuthMethod) {
         } else {
           newPKP = await Lit.mintPKP(authMethod)
         }
+        // const newPKP = await Lit.mintPKP(authMethod)
+
         if (typeof window !== undefined) {
           localStorage.setItem(LIT_ACCOUNT, JSON.stringify(newPKP))
         }

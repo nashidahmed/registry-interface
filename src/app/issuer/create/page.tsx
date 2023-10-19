@@ -1,6 +1,6 @@
 "use client"
 
-import docissueAbi from "/public/abis/Docissue.json"
+import theRegistryAbi from "/public/abis/TheRegistry.json"
 
 import {
   AuthType,
@@ -8,7 +8,6 @@ import {
   SismoConnectResponse,
 } from "@sismo-core/sismo-connect-react"
 import { FormEvent, useContext, useState } from "react"
-import { writeContract } from "@wagmi/core"
 import Input from "@/components/Input"
 import Textarea from "@/components/Textarea"
 import { ethers } from "ethers"
@@ -25,7 +24,7 @@ export default function CreateIssuer() {
   const { initSession } = useSession()
   const { submitWithPersonalSign, loading, txHash } = useBiconomy()
 
-  const docissueContract = process.env
+  const theRegistryContract = process.env
     .NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS as string
 
   const [responseBytes, setResponseBytes] = useState("")
@@ -39,7 +38,7 @@ export default function CreateIssuer() {
 
     let userAddress = "0xd697b55Daf2add294F8f1C58377253573E5A61c8"
 
-    let contractInterface = new ethers.utils.Interface(docissueAbi)
+    let contractInterface = new ethers.utils.Interface(theRegistryAbi)
     let functionSignature = contractInterface.encodeFunctionData(
       "createIssuer",
       [responseBytes, name, website, image, desc]
@@ -132,9 +131,9 @@ export default function CreateIssuer() {
           </div>
         )}
 
-        {/* <div className="mx-auto">
+        <div className="mx-auto">
           <Button onClick={() => init()}>Init session</Button>
-        </div> */}
+        </div>
       </form>
     </div>
   )

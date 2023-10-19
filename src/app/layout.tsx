@@ -25,7 +25,7 @@ const { chains, publicClient } = configureChains(
 )
 
 const appData = {
-  name: "Docissue",
+  name: "TheRegistry",
   description: "Web3 Document Issuer/Viewer",
 }
 

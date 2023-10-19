@@ -26,7 +26,7 @@ interface ISignRequest {
 const baseURL = "https://api.biconomy.io"
 const networkId = 80001
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
-const docissueContract = process.env
+const theRegistryContract = process.env
   .NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS as string
 
 export default function useBiconomy() {
@@ -145,7 +145,7 @@ export default function useBiconomy() {
     )
     let gasPrice = await provider.getGasPrice()
     let gasLimit = await provider.estimateGas({
-      to: docissueContract,
+      to: theRegistryContract,
       from: userAddress,
       data: functionSignature,
     })
@@ -162,7 +162,7 @@ export default function useBiconomy() {
     console.log("------------2-------------")
     // const batchId = await forwarderContract.getBatch(userAddress)
 
-    const to = docissueContract
+    const to = theRegistryContract
     const gasLimitNum = Number(gasLimit.toNumber().toString())
     const request = buildForwardTxRequest(
       userAddress,
@@ -199,7 +199,7 @@ export default function useBiconomy() {
     let params = [request, sig]
     console.log(
       JSON.stringify({
-        to: docissueContract,
+        to: theRegistryContract,
         apiId: process.env.NEXT_PUBLIC_BICONOMY_API_ID as string,
         params,
         from,
@@ -213,7 +213,7 @@ export default function useBiconomy() {
         "Content-Type": "application/json;charset=utf-8",
       },
       body: JSON.stringify({
-        to: docissueContract,
+        to: theRegistryContract,
         apiId: process.env.NEXT_PUBLIC_BICONOMY_API_ID as string,
         params,
         from,

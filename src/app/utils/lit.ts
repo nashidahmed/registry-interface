@@ -32,7 +32,11 @@ class Lit {
   private litNodeClient = this.litAuthClient.litNodeClient
 
   constructor() {
-    this.litNodeClient.connect()
+    this.connect()
+  }
+
+  async connect() {
+    await this.litNodeClient.connect()
   }
 
   /**
@@ -64,6 +68,8 @@ class Lit {
    * Get auth method object from redirect
    */
   async claimKey(authMethod: AuthMethod): Promise<ClaimKeyResponse> {
+    this.litNodeClient = this.litAuthClient.litNodeClient
+    await this.litNodeClient.connect()
     let claimReq = {
       authMethod,
       relayApiKey: process.env.NEXT_PUBLIC_LIT_RELAY_API_KEY,
@@ -74,9 +80,11 @@ class Lit {
     return res
   }
 
-  async computeKey() {
+  async computeKey(sub: string) {
+    this.litNodeClient = this.litAuthClient.litNodeClient
+    await this.litNodeClient.connect()
     const keyId = this.litNodeClient.computeHDKeyId(
-      "demon.king.115@gmail.com",
+      sub,
       process.env.NEXT_PUBLIC_GOOGLE_APP_ID as string
     )
     console.log(keyId)
@@ -98,7 +106,7 @@ class Lit {
     sessionSigsParams: GetSessionSigsProps
   }): Promise<SessionSigs> {
     const provider = this.getProviderByAuthMethod(authMethod)
-    // console.log(provider?.computePublicKeyFromAuthMethod(authMethod))
+    console.log(provider?.computePublicKeyFromAuthMethod(authMethod))
     if (provider) {
       // await litNodeClient.connect()
       const sessionSigs = await provider.getSessionSigs({
@@ -111,6 +119,7 @@ class Lit {
 
       return sessionSigs
     } else {
+      console.log(provider)
       throw new Error(
         `Provider not found for auth method type ${authMethod.authMethodType}`
       )

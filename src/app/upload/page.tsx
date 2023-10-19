@@ -1,6 +1,6 @@
 "use client"
 
-import docissueAbi from "/public/abis/Docissue.json"
+import theRegistryAbi from "/public/abis/TheRegistry.json"
 
 import { ethers } from "ethers"
 import { FormEvent, useEffect, useState } from "react"
@@ -10,9 +10,11 @@ import { Web3Storage } from "web3.storage"
 import Input from "@/components/Input"
 import Button from "@/components/Button"
 import Lit from "@/utils/lit"
+import useAuthenticate from "@/hooks/useAuthenticate"
 
 export default function Upload() {
   const { address } = useAccount()
+  const { getAuthMethod } = useAuthenticate()
 
   const [cid, setCid] = useState<string>()
   const [file, setFile] = useState<File>()
@@ -34,7 +36,10 @@ export default function Upload() {
     })
   }
 
-  async function test() {
+  async function claimKey() {
+    const authMethod = getAuthMethod()
+    console.log(authMethod)
+    Lit.claimKey(authMethod)
     // Lit.authenticate(title)
   }
 
@@ -60,7 +65,7 @@ export default function Upload() {
   //   const { hash } = await writeContract({
   //     address: process.env
   //       .NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS as `0x${string}`,
-  //     abi: docissueAbi,
+  //     abi: theRegistryAbi,
   //     functionName: "uploadDocument",
   //     args: [title, cid],
   //   })
@@ -68,9 +73,10 @@ export default function Upload() {
   //   console.log(hash)
   // }
 
-  // async function getPubKey() {
-  //   await lit.encryptFile(title)
-  // }
+  async function getPubKey() {
+    await Lit.computeKey("108320763296956109044")
+    await Lit.computeKey("demon.king.115@gmail.com")
+  }
 
   return (
     <div className="px-96">
@@ -98,10 +104,10 @@ export default function Upload() {
         </div>
 
         <div className="mx-auto mt-8">
-          <Button onClick={test}>Test</Button>
+          <Button onClick={claimKey}>Claim key</Button>
         </div>
         <div className="mx-auto mt-8">
-          <Button onClick={Lit.computeKey}>Computer Key</Button>
+          <Button onClick={getPubKey}>Computer Key</Button>
         </div>
       </div>
     </div>

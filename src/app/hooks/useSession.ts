@@ -4,6 +4,7 @@ import Lit from "@/utils/lit"
 import {
   LitAbility,
   LitAccessControlConditionResource,
+  LitPKPResource,
 } from "@lit-protocol/auth-helpers"
 import { IRelayPKP } from "@lit-protocol/types"
 import { SessionSigs, SessionKeyPair } from "@lit-protocol/types"
@@ -34,13 +35,23 @@ export default function useSession() {
         const chain = "ethereum"
         const resourceAbilities = [
           {
-            resource: new LitAccessControlConditionResource("someResource"),
-            ability: LitAbility.AccessControlConditionDecryption,
+            resource: new LitPKPResource("*"),
+            ability: LitAbility.PKPSigning,
           },
         ]
         const expiration = new Date(
           Date.now() + 1000 * 60 * 60 * 24 * 7
         ).toISOString() // 1 week
+
+        console.log({
+          pkpPublicKey: pkp.publicKey,
+          authMethod,
+          sessionSigsParams: {
+            chain,
+            expiration,
+            resourceAbilityRequests: resourceAbilities,
+          },
+        })
 
         // Generate session sigs
         const sessionSigs = await Lit.getSessionSigs({
@@ -49,8 +60,7 @@ export default function useSession() {
           sessionSigsParams: {
             chain,
             expiration,
-            resourceAbilityRequests: resourceAbilities,
-            sessionKey,
+            resourceAbilityRequests: [],
           },
         })
         console.log("----------  2 --------------")

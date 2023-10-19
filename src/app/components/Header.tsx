@@ -53,13 +53,13 @@ export default function Header() {
   //   }
   // }, [authMethod, fetchAccount])
 
-  useEffect(() => {
-    console.log("----------------", authMethod, account)
-    // If user is authenticated and has selected an account, initialize session
-    if (authMethod && account) {
-      initSession(authMethod, account)
-    }
-  }, [authMethod, account, initSession])
+  // useEffect(() => {
+  //   console.log("----------------", authMethod, account)
+  //   // If user is authenticated and has selected an account, initialize session
+  //   if (authMethod && account) {
+  //     initSession(authMethod, account)
+  //   }
+  // }, [authMethod, account, initSession])
 
   // useEffect(() => {
   //   // If user is authenticated and has selected an account, initialize session
@@ -101,7 +101,7 @@ export default function Header() {
   return (
     <header className="flex justify-between items-center py-12">
       <Link href={"/"} className="font-mono text-2xl">
-        Docissue
+        TheRegistry
       </Link>
       <div className="flex items-center gap-6">
         <Link href={"/upload"}>Upload Content</Link>
