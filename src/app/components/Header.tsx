@@ -4,7 +4,7 @@ import useAuthenticate from "@/hooks/useAuthenticate"
 import useSession from "@/hooks/useSession"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import Image from "next/image"
 import { disconnectWeb3 } from "@lit-protocol/lit-node-client"
 import { LOCAL_STORAGE_KEYS } from "@lit-protocol/constants"
@@ -18,16 +18,19 @@ export default function Header() {
 
   const {
     authMethod,
+    removeAuthMethod,
+    setAuthMethod,
     loading: authLoading,
     error: authError,
   } = useAuthenticate(redirectUri)
   const {
-    fetchAccount,
     account,
+    removeAccount,
     setAccount,
     loading: accountLoading,
     error: accountError,
   } = useAccount(authMethod)
+
   const {
     initSession,
     sessionKey,
@@ -50,13 +53,13 @@ export default function Header() {
   //   }
   // }, [authMethod, fetchAccount])
 
-  // useEffect(() => {
-  //   console.log("----------------", authMethod, account)
-  //   // If user is authenticated and has selected an account, initialize session
-  //   if (authMethod && account) {
-  //     initSession(authMethod, account)
-  //   }
-  // }, [authMethod, account, initSession])
+  useEffect(() => {
+    console.log("----------------", authMethod, account)
+    // If user is authenticated and has selected an account, initialize session
+    if (authMethod && account) {
+      initSession(authMethod, account)
+    }
+  }, [authMethod, account, initSession])
 
   // useEffect(() => {
   //   // If user is authenticated and has selected an account, initialize session
@@ -73,7 +76,8 @@ export default function Header() {
 
   async function handleLogout() {
     disconnectWeb3()
-    setAccount(undefined)
+    removeAccount()
+    removeAuthMethod()
     setSessionSigs(undefined)
     typeof window !== "undefined"
       ? localStorage.removeItem(LOCAL_STORAGE_KEYS.SESSION_KEY)
@@ -100,7 +104,6 @@ export default function Header() {
         Docissue
       </Link>
       <div className="flex items-center gap-6">
-        <Link href={"/view"}>View Content</Link>
         <Link href={"/upload"}>Upload Content</Link>
         <Link href={"/issuer/create"}>Become an issuer</Link>
         <button
@@ -114,11 +117,7 @@ export default function Header() {
           onClick={pkpWallet ? handleLogout : handleGoogleLogin}
         >
           <div className="btn__icon">
-            <Image
-              src="/icons/google.png"
-              alt="Google logo"
-              fill={true}
-            ></Image>
+            <object data="/icons/google.svg" type="image/svg+xml"></object>
           </div>
           <ButtonText />
         </button>

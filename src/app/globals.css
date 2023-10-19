@@ -392,6 +392,7 @@ main {
 .container {
   width: 100%;
   display: flex;
+  margin-bottom: 5rem;
   flex-direction: column;
   background-color: white;
   gap: 1rem;
@@ -646,15 +647,11 @@ p.message-card__prompt {
 .loader {
   display: block;
   position: relative;
-  width: 2rem;
-  height: 2rem;
 }
 
 .loader::after {
   content: "";
   position: absolute;
-  width: 2rem;
-  height: 2rem;
   top: 0;
   left: 0;
   right: 0;

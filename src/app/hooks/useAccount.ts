@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useState } from "react"
 import { AuthMethod } from "@lit-protocol/types"
 import Lit from "@/utils/lit"
 import { IRelayPKP } from "@lit-protocol/types"
 import { useRouter } from "next/navigation"
+import { LIT_ACCOUNT } from "@/utils/constants"
 
 export default function useAccount(authMethod?: AuthMethod) {
   const [account, setAccount] = useState<IRelayPKP>()
@@ -20,12 +21,16 @@ export default function useAccount(authMethod?: AuthMethod) {
       try {
         // Fetch PKPs tied to given auth method
         const myPKPs = await Lit.getPKPs(authMethod)
+        let newPKP
         if (myPKPs.length > 0) {
-          setAccount(myPKPs[0])
+          newPKP = myPKPs[0]
         } else {
-          const newPKP = await Lit.mintPKP(authMethod)
-          setAccount(newPKP)
+          newPKP = await Lit.mintPKP(authMethod)
         }
+        if (typeof window !== undefined) {
+          localStorage.setItem(LIT_ACCOUNT, JSON.stringify(newPKP))
+        }
+        setAccount(newPKP)
       } catch (err) {
         setError(err as Error)
       } finally {
@@ -35,10 +40,21 @@ export default function useAccount(authMethod?: AuthMethod) {
     []
   )
 
+  const getAccount = () => {
+    return typeof window !== "undefined"
+      ? localStorage.getItem(LIT_ACCOUNT) &&
+          JSON.parse(localStorage.getItem(LIT_ACCOUNT) as string)
+      : undefined
+  }
+
+  const removeAccount = () => {
+    setAccount(undefined)
+    localStorage.removeItem(LIT_ACCOUNT)
+  }
+
   useEffect(() => {
     // If user is authenticated, fetch accounts
     if (authMethod) {
-      console.log(authMethod, account)
       router.replace(window.location.pathname, undefined)
       fetchAccount(authMethod)
     }
@@ -47,6 +63,8 @@ export default function useAccount(authMethod?: AuthMethod) {
   return {
     fetchAccount,
     setAccount,
+    getAccount,
+    removeAccount,
     account,
     loading,
     error,

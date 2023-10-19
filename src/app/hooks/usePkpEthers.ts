@@ -1,4 +1,3 @@
-import { LIT_CHAINS } from "@/utils/constants"
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
 import { useCallback, useEffect, useState } from "react"
 import { SessionSigs, IRelayPKP } from "@lit-protocol/types"

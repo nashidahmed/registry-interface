@@ -7,7 +7,7 @@ import {
   SismoConnectButton,
   SismoConnectResponse,
 } from "@sismo-core/sismo-connect-react"
-import { useState } from "react"
+import { FormEvent, useContext, useState } from "react"
 import { writeContract } from "@wagmi/core"
 import Input from "@/components/Input"
 import Textarea from "@/components/Textarea"
@@ -16,11 +16,17 @@ import Button from "@/components/Button"
 import useAuthenticate from "@/hooks/useAuthenticate"
 import useAccount from "@/hooks/useAccount"
 import useSession from "@/hooks/useSession"
+import useBiconomy from "@/hooks/useBiconomy"
+import Link from "next/link"
 
 export default function CreateIssuer() {
-  const { authMethod } = useAuthenticate()
-  const { account } = useAccount()
+  const { getAuthMethod } = useAuthenticate()
+  const { getAccount } = useAccount()
   const { initSession } = useSession()
+  const { submitWithPersonalSign, loading, txHash } = useBiconomy()
+
+  const docissueContract = process.env
+    .NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS as string
 
   const [responseBytes, setResponseBytes] = useState("")
   const [name, setName] = useState("")
@@ -28,57 +34,24 @@ export default function CreateIssuer() {
   const [image, setImage] = useState("")
   const [desc, setDesc] = useState("")
 
-  async function createIssuer() {
-    const provider = new ethers.providers.JsonRpcProvider(
-      process.env.NEXT_PUBLIC_INFURA_RPC
-    )
-    const signer = new ethers.Wallet(
-      process.env.NEXT_PUBLIC_PRIVATE_KEY as string,
-      provider
+  async function createIssuer(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    let userAddress = "0xd697b55Daf2add294F8f1C58377253573E5A61c8"
+
+    let contractInterface = new ethers.utils.Interface(docissueAbi)
+    let functionSignature = contractInterface.encodeFunctionData(
+      "createIssuer",
+      [responseBytes, name, website, image, desc]
     )
 
-    let contractInterface = new ethers.Contract(
-      process.env.NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS as string,
-      docissueAbi,
-      signer
-    )
-    // let functionSignature = contractInterface.encodeFunctionData(
-    //   "createIssuer",
-    //   [responseBytes, name, website, desc]
-    // )
-    // let rawTx = {
-    //   to: process.env.NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS,
-    //   data: functionSignature,
-    //   from: "0xd697b55Daf2add294F8f1C58377253573E5A61c8",
-    // }
-    // let signedTx = await signer.signTransaction(rawTx);
-    // const tx = await signer.sendTransaction({
-    //   to: "0x160877899134C796E7eeA983364F88e0d1Fb0252",
-    //   value: ethers.utils.parseUnits("0.001", "ether"),
-    // })
-    console.log(
-      await contractInterface.createIssuer(
-        responseBytes,
-        name,
-        website,
-        image,
-        desc
-      )
-    )
-
-    // const { hash } = await writeContract({
-    //   address: process.env
-    //     .NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS as `0x${string}`,
-    //   abi: docissueAbi,
-    //   functionName: "createIssuer",
-    //   args: [responseBytes, name, website, desc],
-    // })
-
-    // console.log(hash)
+    submitWithPersonalSign(functionSignature, userAddress)
   }
 
   function init() {
-    console.log("----------------", authMethod, account)
+    const authMethod = getAuthMethod()
+    const account = getAccount()
+    console.log(getAuthMethod(), getAccount())
     // If user is authenticated and has selected an account, initialize session
     if (authMethod && account) {
       initSession(authMethod, account)
@@ -90,7 +63,7 @@ export default function CreateIssuer() {
       <header className="h-32 flex items-center justify-center text-4xl">
         Create a profile
       </header>
-      <div className="container">
+      <form className="container" onSubmit={createIssuer}>
         <Input
           id="organization_name"
           label="Organization Name"
@@ -129,14 +102,40 @@ export default function CreateIssuer() {
             overrideStyle={{ height: "2.25rem", fontSize: "1rem" }}
           />
         </div>
-        <div className="mx-auto">
-          <Button onClick={createIssuer}>Create Profile</Button>
+        <div className="flex gap-4 mx-auto">
+          <Button type="submit">
+            {loading ? (
+              <div className="flex gap-2">
+                Create Profile
+                <div>
+                  <div className="loader w-5 h-5"></div>
+                </div>
+              </div>
+            ) : (
+              "Create Profile"
+            )}
+          </Button>
         </div>
+        {txHash && (
+          <div className="text-center">
+            Created Profile successfully.
+            <br />
+            Tx ID:{" "}
+            <Link
+              className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+              href={`https://mumbai.polygonscan.com/tx/${txHash}`}
+              passHref
+              target="_blank"
+            >
+              {txHash}
+            </Link>
+          </div>
+        )}
 
-        <div className="mx-auto">
+        {/* <div className="mx-auto">
           <Button onClick={() => init()}>Init session</Button>
-        </div>
-      </div>
+        </div> */}
+      </form>
     </div>
   )
 }

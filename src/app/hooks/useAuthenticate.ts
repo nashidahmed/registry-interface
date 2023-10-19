@@ -3,6 +3,7 @@ import { isSignInRedirect } from "@lit-protocol/lit-auth-client"
 import { AuthMethod } from "@lit-protocol/types"
 import Lit from "@/utils/lit"
 import { useConnect } from "wagmi"
+import { LIT_AUTH_METHOD } from "@/utils/constants"
 
 export default function useAuthenticate(redirectUri?: string) {
   const [authMethod, setAuthMethod] = useState<AuthMethod>()
@@ -22,6 +23,9 @@ export default function useAuthenticate(redirectUri?: string) {
         redirectUri as string
       )) as AuthMethod
       console.log(result)
+      if (typeof window !== undefined) {
+        localStorage.setItem(LIT_AUTH_METHOD, JSON.stringify(result))
+      }
       setAuthMethod(result)
     } catch (err) {
       setError(err as Error)
@@ -36,12 +40,26 @@ export default function useAuthenticate(redirectUri?: string) {
       // If redirected, authenticate with social provider
       authWithGoogle()
     }
-    console.log(authMethod)
   }, [redirectUri])
+
+  const getAuthMethod = () => {
+    return typeof window !== "undefined"
+      ? localStorage.getItem(LIT_AUTH_METHOD) &&
+          JSON.parse(localStorage.getItem(LIT_AUTH_METHOD) as string)
+      : undefined
+  }
+
+  const removeAuthMethod = () => {
+    setAuthMethod(undefined)
+    localStorage.removeItem(LIT_AUTH_METHOD)
+  }
 
   return {
     authMethod,
+    setAuthMethod,
     loading,
     error,
+    getAuthMethod,
+    removeAuthMethod,
   }
 }

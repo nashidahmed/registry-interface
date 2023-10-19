@@ -1,7 +1,8 @@
-export const STATE_KEY = "lit-state"
+export const LIT_ACCOUNT = "lit-account"
+export const LIT_AUTH_METHOD = "lit-auth-method"
 
 export const DEFAULT_CHAIN_ID = 80001
-export const LIT_CHAINS = [
+export const CHAINS = [
   {
     chainId: 1,
     name: "Ethereum",
@@ -62,16 +63,6 @@ export const LIT_CHAINS = [
     testNetwork: true,
   },
 ]
-
-export const INITIAL_APP_STATE = {
-  isAuthenticated: false,
-  currentUsername: null,
-  currentPKP: null,
-  sessionSigs: {},
-  sessionExpiration: null,
-  appChainId: DEFAULT_CHAIN_ID,
-  appChains: LIT_CHAINS,
-}
 
 // export const AuthMethodTypes = {
 //   NULLMETHOD: 0,
