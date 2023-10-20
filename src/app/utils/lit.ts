@@ -16,8 +16,6 @@ import {
   ClaimKeyResponse,
   SessionKeyPair,
 } from "@lit-protocol/types"
-import { SmartAccountSigner, WalletClientSigner } from "@alchemy/aa-core"
-import { createWalletClient, custom } from "viem"
 import {
   LitAbility,
   LitAccessControlConditionResource,

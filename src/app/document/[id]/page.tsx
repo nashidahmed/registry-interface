@@ -1,3 +1,5 @@
+"use client"
+
 import { Database } from "@tableland/sdk"
 import { useState } from "react"
 

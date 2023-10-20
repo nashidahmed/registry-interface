@@ -24,8 +24,8 @@ import { WalletContext } from "@/layout"
 
 export default function CreateIssuer() {
   const { pkpWallet, setPkpWallet } = useContext<{
-    pkpWallet: PKPEthersWallet
-    setPkpWallet: React.Dispatch<SetStateAction<PKPEthersWallet>>
+    pkpWallet?: PKPEthersWallet
+    setPkpWallet?: React.Dispatch<SetStateAction<PKPEthersWallet>>
   }>(WalletContext)
   const { submitWithPersonalSign, loading, txHash } = useBiconomy()
 

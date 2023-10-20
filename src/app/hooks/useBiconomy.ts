@@ -3,10 +3,6 @@ import { useState } from "react"
 import biconomyForwarderAbi from "/public/abis/Biconomy.json"
 import abi from "ethereumjs-abi"
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
-import { AlchemyProvider } from "@alchemy/aa-alchemy"
-import { polygonMumbai } from "viem/chains"
-import { LightSmartContractAccount } from "@alchemy/aa-accounts"
-import { SmartAccountSigner } from "@alchemy/aa-core"
 
 export interface ICreateIssuerRequest {
   responseBytes: string
@@ -158,7 +154,7 @@ export default function useBiconomy() {
     let forwarderContract = new Contract(
       forwarder.address,
       forwarder.abi,
-      signer
+      new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY as string, provider)
     )
 
     console.log(forwarderContract)
@@ -173,7 +169,7 @@ export default function useBiconomy() {
       to,
       gasLimitNum,
       "0",
-      "0",
+      batchNonce,
       functionSignature
     )
 

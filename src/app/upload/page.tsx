@@ -29,8 +29,8 @@ import { WalletContext } from "@/layout"
 
 export default function Upload() {
   const { pkpWallet, setPkpWallet } = useContext<{
-    pkpWallet: PKPEthersWallet
-    setPkpWallet: React.Dispatch<SetStateAction<PKPEthersWallet>>
+    pkpWallet?: PKPEthersWallet
+    setPkpWallet?: React.Dispatch<SetStateAction<PKPEthersWallet>>
   }>(WalletContext)
 
   const [cid, setCid] = useState<string>()

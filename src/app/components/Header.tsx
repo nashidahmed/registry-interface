@@ -16,8 +16,8 @@ export default function Header() {
   const pathname = usePathname()
   const redirectUri = ORIGIN + pathname
   const { pkpWallet, setPkpWallet } = useContext<{
-    pkpWallet: PKPEthersWallet | undefined
-    setPkpWallet: React.Dispatch<SetStateAction<PKPEthersWallet | undefined>>
+    pkpWallet?: PKPEthersWallet | undefined
+    setPkpWallet?: React.Dispatch<SetStateAction<PKPEthersWallet | undefined>>
   }>(WalletContext)
 
   const {
@@ -69,7 +69,7 @@ export default function Header() {
   }, [sessionSigs, account, connect])
 
   useEffect(() => {
-    if (pkpEthers) {
+    if (pkpEthers && setPkpWallet) {
       setPkpWallet(pkpEthers)
       console.log(pkpEthers)
     }
@@ -81,7 +81,7 @@ export default function Header() {
 
   async function handleLogout() {
     disconnectWeb3()
-    setPkpWallet(undefined)
+    setPkpWallet && setPkpWallet(undefined)
     typeof window !== "undefined"
       ? localStorage.removeItem(LOCAL_STORAGE_KEYS.SESSION_KEY)
       : undefined

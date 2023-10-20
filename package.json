@@ -9,9 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@alchemy/aa-accounts": "^0.1.1",
-    "@alchemy/aa-alchemy": "^0.1.1",
-    "@alchemy/aa-core": "^0.1.1",
     "@biconomy/mexa": "^3.0.6",
     "@ethersproject/contracts": "^5.2.0",
     "@ethersproject/hash": "^5.4.0",
