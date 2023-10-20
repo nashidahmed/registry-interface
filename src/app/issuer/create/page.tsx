@@ -45,7 +45,7 @@ export default function CreateIssuer() {
       let contractInterface = new ethers.utils.Interface(theRegistryAbi)
       let functionSignature = contractInterface.encodeFunctionData(
         "createIssuer",
-        [responseBytes, name, website, image, desc]
+        [responseBytes, name, website, desc, image]
       )
 
       submitWithPersonalSign(

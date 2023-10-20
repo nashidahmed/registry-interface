@@ -16,6 +16,7 @@ interface Issuer {
 export default function View({ params }: { params: { id: string } }) {
   // This table has schema: `counter INTEGER PRIMARY KEY`
   const [issuer, setIssuer] = useState<Issuer>()
+  const [loading, setLoading] = useState<boolean>(true)
   const appId = "0x1002"
   const tableName: string = process.env.NEXT_PUBLIC_ISSERS_TABLE_NAME as string // Our pre-defined health check table
 
@@ -29,11 +30,19 @@ export default function View({ params }: { params: { id: string } }) {
   }, [])
 
   const getIssuer = async () => {
-    const preparedStmt = db.prepare(`SELECT * FROM ${tableName} WHERE id = ?1`)
+    try {
+      const preparedStmt = db.prepare(
+        `SELECT * FROM ${tableName} WHERE id = ?1`
+      )
 
-    const issuer: Issuer = await preparedStmt.bind(params.id).first()
-    console.log(issuer)
-    setIssuer(issuer)
+      const issuer: Issuer = await preparedStmt.bind(params.id).first()
+      console.log(issuer)
+      setIssuer(issuer)
+    } catch (err) {
+      console.log(err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const getTwitterLink = (twitterId: string) => {
@@ -56,8 +65,9 @@ export default function View({ params }: { params: { id: string } }) {
         <div className="flex justify-between items-center">
           <div className="text-5xl">
             <div className="flex gap-4 items-center">
-              <div className="w-32">
+              <div className="w-32 h-32 rounded-full flex items-center justify-center">
                 <img
+                  className="h-32 w-32 object-cover rounded-full"
                   src={issuer.image}
                   onError={({ currentTarget }) => {
                     currentTarget.onerror = null // prevents looping
@@ -116,6 +126,13 @@ export default function View({ params }: { params: { id: string } }) {
           <br />
           {issuer?.description}
         </div>
+      </div>
+    </div>
+  ) : loading ? (
+    <div className="text-4xl flex justify-center mt-32 gap-4">
+      Loading Issuer
+      <div>
+        <div className="loader w-10 h-10"></div>
       </div>
     </div>
   ) : (
