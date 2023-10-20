@@ -11,13 +11,15 @@ import { LOCAL_STORAGE_KEYS } from "@lit-protocol/constants"
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
 import usePkpEthers from "@/hooks/usePkpEthers"
 import { WalletContext } from "@/layout"
+import { SessionSigs } from "@lit-protocol/types"
 
 export default function Header() {
   const pathname = usePathname()
   const redirectUri = ORIGIN + pathname
-  const { pkpWallet, setPkpWallet } = useContext<{
+  const { pkpWallet, setPkpWallet, setSessionSigs } = useContext<{
     pkpWallet?: PKPEthersWallet | undefined
     setPkpWallet?: React.Dispatch<SetStateAction<PKPEthersWallet | undefined>>
+    setSessionSigs?: React.Dispatch<SetStateAction<SessionSigs | undefined>>
   }>(WalletContext)
 
   const {
@@ -37,7 +39,6 @@ export default function Header() {
     initSession,
     sessionKey,
     sessionSigs,
-    setSessionSigs,
     loading: sessionLoading,
     error: sessionError,
   } = useSession()
@@ -63,7 +64,8 @@ export default function Header() {
 
   useEffect(() => {
     // If user is authenticated and has selected an account, initialize session
-    if (sessionSigs && account) {
+    if (sessionSigs && account && setSessionSigs) {
+      setSessionSigs(sessionSigs)
       connect(sessionSigs, account)
     }
   }, [sessionSigs, account, connect])

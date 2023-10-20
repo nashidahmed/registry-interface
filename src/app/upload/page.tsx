@@ -26,11 +26,13 @@ import Link from "next/link"
 import useSismo from "@/hooks/useSismo"
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
 import { WalletContext } from "@/layout"
+import { encrypt, getAddress } from "@/utils/lit"
+import { SessionSigs } from "@lit-protocol/types"
 
 export default function Upload() {
-  const { pkpWallet, setPkpWallet } = useContext<{
+  const { pkpWallet, sessionSigs } = useContext<{
     pkpWallet?: PKPEthersWallet
-    setPkpWallet?: React.Dispatch<SetStateAction<PKPEthersWallet>>
+    sessionSigs?: SessionSigs
   }>(WalletContext)
 
   const [cid, setCid] = useState<string>()
@@ -40,86 +42,50 @@ export default function Upload() {
   const { submitWithPersonalSign, loading, setLoading, txHash } = useBiconomy()
 
   async function uploadFile() {
-    setLoading(true)
-    const client = new Web3Storage({
-      token: process.env.NEXT_PUBLIC_WEB3_STORAGE_TOKEN as string,
-    })
+    if (file && sessionSigs) {
+      setLoading(true)
+      const client = new Web3Storage({
+        token: process.env.NEXT_PUBLIC_WEB3_STORAGE_TOKEN as string,
+      })
 
-    const cid = await client.put([new File([file as File], "test")], {
-      onRootCidReady: (localCid: string) => {
-        setCid(localCid)
-      },
-      onStoredChunk: (bytes: any) => {
-        console.log(`> 🛰 sent ${bytes.toLocaleString()} bytes to web3.storage`)
-        setLoading(false)
-      },
-    })
+      const receiver = await getAddress("113478391645363093325")
 
-    if (pkpWallet) {
-      let contractInterface = new ethers.utils.Interface(theRegistryAbi)
-      let functionSignature = contractInterface.encodeFunctionData(
-        "uploadDocument",
-        [
-          responseBytes,
-          title,
-          cid,
-          "0xd697b55Daf2add294F8f1C58377253573E5A61c8",
-        ]
+      const { ciphertext, dataToEncryptHash } = await encrypt(
+        file,
+        sessionSigs,
+        receiver
       )
+      console.log(ciphertext, dataToEncryptHash)
 
-      console.log("---------  11----------------")
-      submitWithPersonalSign(
-        functionSignature,
-        pkpWallet,
-        process.env.NEXT_PUBLIC_BICONOMY_UPLOAD_API_ID as string
-      )
+      const cid = await client.put([new File([ciphertext], "test")], {
+        onRootCidReady: (localCid: string) => {
+          setCid(localCid)
+        },
+        onStoredChunk: (bytes: any) => {
+          console.log(
+            `> 🛰 sent ${bytes.toLocaleString()} bytes to web3.storage`
+          )
+          setLoading(false)
+        },
+      })
+
+      if (pkpWallet) {
+        let contractInterface = new ethers.utils.Interface(theRegistryAbi)
+        let functionSignature = contractInterface.encodeFunctionData(
+          "uploadDocument",
+          [responseBytes, dataToEncryptHash, cid, receiver]
+        )
+
+        console.log("---------  11----------------")
+        submitWithPersonalSign(
+          functionSignature,
+          pkpWallet,
+          process.env.NEXT_PUBLIC_BICONOMY_UPLOAD_API_ID as string
+        )
+      }
+    } else {
+      alert("Please upload a file")
     }
-  }
-
-  async function claimKey() {
-    // const authMethod = getAuthMethod()
-    // console.log(authMethod)
-    // Lit.claimKey(authMethod)
-    // Lit.authenticate(title)
-  }
-
-  // function uploadDocument(event: FormEvent<HTMLFormElement>) {
-  //   event.preventDefault()
-  // }
-
-  // async function handleSubmit(event: FormEvent) {
-  //   // don't reload the page!
-  //   event.preventDefault()
-  //   console.log(`Uploading to Filecoin...`)
-
-  //   const client = new Web3Storage({
-  //     token: process.env.NEXT_PUBLIC_WEB3_STORAGE_TOKEN as string,
-  //   })
-
-  //   console.log(file)
-
-  //   const cid = await client.put([new File([file as File], "test")], {
-  //     onRootCidReady: (localCid: string) => {
-  //       setCid(localCid)
-  //     },
-  //     onStoredChunk: (bytes: any) =>
-  //       console.log(`> 🛰 sent ${bytes.toLocaleString()} bytes to web3.storage`),
-  //   })
-
-  //   const { hash } = await writeContract({
-  //     address: process.env
-  //       .NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS as `0x${string}`,
-  //     abi: theRegistryAbi,
-  //     functionName: "uploadDocument",
-  //     args: [title, cid],
-  //   })
-
-  //   console.log(hash)
-  // }
-
-  async function getPubKey() {
-    // await Lit.computeKey("108320763296956109044")
-    // await Lit.computeKey("demon.king.115@gmail.com")
   }
 
   return (
@@ -188,13 +154,6 @@ export default function Upload() {
             </Link>
           </div>
         )}
-
-        <div className="mx-auto mt-8">
-          <Button onClick={claimKey}>Claim key</Button>
-        </div>
-        <div className="mx-auto mt-8">
-          <Button onClick={getPubKey}>Computer Key</Button>
-        </div>
       </div>
     </div>
   )

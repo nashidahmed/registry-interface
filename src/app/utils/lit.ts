@@ -21,7 +21,11 @@ import {
   LitAccessControlConditionResource,
   LitPKPResource,
 } from "@lit-protocol/auth-helpers"
+import { ethers } from "ethers"
+import { toUtf8Bytes } from "ethers/lib/utils"
+import { decryptToFile, encryptFile } from "@lit-protocol/lit-node-client"
 
+const chain = "mumbai"
 export const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || "localhost"
 export const ORIGIN =
   process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
@@ -73,29 +77,43 @@ export async function authenticateWithGoogle(
  */
 export async function claimKey(
   authMethod: AuthMethod
-): Promise<ClaimKeyResponse> {
+): Promise<ClaimKeyResponse | undefined> {
   await litNodeClient.connect()
+
+  // console.log(JSON.parse(atob(authMethod.accessToken.split(".")[1])))
+  // const token = authMethod.accessToken.split(".")
+  // const data = JSON.parse(atob(token[1]))
+  // data["sub"] = data["email"]
+  // token[1] = btoa(JSON.stringify(data))
+  // authMethod.accessToken = token.join(".")
+  // console.log(JSON.parse(atob(authMethod.accessToken.split(".")[1])))
 
   let claimReq = {
     authMethod,
     relayApiKey: process.env.NEXT_PUBLIC_LIT_RELAY_API_KEY,
   }
 
-  const res: ClaimKeyResponse = await litNodeClient.claimKeyId(claimReq)
-  console.log(res)
-  return res
+  try {
+    const res: ClaimKeyResponse = await litNodeClient.claimKeyId(claimReq)
+    console.log(res)
+    return res
+  } catch (err) {
+    console.log(err)
+    return
+  }
 }
 
-export async function computeKey(sub: string) {
+export async function getAddress(sub: string): Promise<string> {
   await litNodeClient.connect()
   const keyId = litNodeClient.computeHDKeyId(
     sub,
     process.env.NEXT_PUBLIC_GOOGLE_APP_ID as string
   )
-  console.log(keyId)
-  // the key id can now be given to the public key calculation method
+
   const publicKey = litNodeClient.computeHDPubKey(keyId.slice(2))
-  console.log("user public key will be: ", publicKey)
+  console.log(publicKey)
+
+  return ethers.utils.computeAddress(`0x${publicKey}`)
 }
 
 /**
@@ -179,6 +197,58 @@ export async function mintPKP(authMethod: AuthMethod): Promise<IRelayPKP> {
   return newPKP
 }
 
+export async function encrypt(
+  file: File,
+  sessionSigs: SessionSigs,
+  receiver: string
+) {
+  const accessControlConditions = [
+    {
+      contractAddress: "",
+      standardContractType: "",
+      chain,
+      method: "",
+      parameters: [":userAddress"],
+      returnValueTest: {
+        comparator: "=",
+        value: receiver,
+      },
+    },
+  ]
+
+  await litNodeClient.connect()
+
+  const { ciphertext, dataToEncryptHash } = await encryptFile(
+    { accessControlConditions, sessionSigs, file, chain },
+    litNodeClient
+  )
+
+  return {
+    ciphertext,
+    dataToEncryptHash,
+  }
+}
+
+export async function decrypt(
+  ciphertext: string,
+  dataToEncryptHash: string,
+  sessionSigs: SessionSigs
+) {
+  await litNodeClient.connect()
+  const decryptedFile = await decryptToFile(
+    {
+      ciphertext,
+      dataToEncryptHash,
+      chain,
+      sessionSigs,
+    },
+    litNodeClient
+  )
+  // eslint-disable-next-line no-console
+  console.log(decryptedFile)
+  return decryptedFile
+}
+
 /**
  * Get provider for given auth method
  */
@@ -190,30 +260,3 @@ function getProviderByAuthMethod(authMethod: AuthMethod) {
       return
   }
 }
-// export async encryptFile(file: File, web3Provider, walletAddress) {
-
-//   await litNodeClient.connect()
-
-//   const authSig = await ethConnect.signAndSaveAuthMessage({
-//     web3: web3Provider,
-//     account: walletAddress.toLowerCase(),
-//     chainId: 5,
-//     expiration: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(),
-//   })
-//   const { encryptedFile, symmetricKey } = await LitJsSdk.encryptFile({ file })
-
-//   const encryptedSymmetricKey = await litNodeClient.saveEncryptionKey({
-//     accessControlConditions,
-//     symmetricKey,
-//     authSig,
-//     chain,
-//   })
-
-//   return {
-//     encryptedFile,
-//     encryptedSymmetricKey: LitJsSdk.uint8arrayToString(
-//       encryptedSymmetricKey,
-//       "base16"
-//     ),
-//   }
-// }

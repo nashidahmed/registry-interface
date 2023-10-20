@@ -12,31 +12,6 @@
   resolved "https://registry.yarnpkg.com/@adraffy/ens-normalize/-/ens-normalize-1.9.4.tgz#aae21cb858bbb0411949d5b7b3051f4209043f62"
   integrity sha512-UK0bHA7hh9cR39V+4gl2/NnBBjoXIxkuWAPCaY4X7fbH4L/azIi7ilWOCjMUYfpJgraLUAqkRi2BqrjME8Rynw==
 
-"@alchemy/aa-accounts@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@alchemy/aa-accounts/-/aa-accounts-0.1.1.tgz#7527e25fe2825eb91d80f6e4cb85d188606587a4"
-  integrity sha512-nHHnJuIHXGdvH5i+7DlTeSPa3RJtNLt4NpJP+G+T8G3QP/k6mxHNWFTybOhqxuCC798DACxKc4thOL2Lj8phgA==
-  dependencies:
-    "@alchemy/aa-core" "^0.1.1"
-    viem "^1.16.2"
-
-"@alchemy/aa-alchemy@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@alchemy/aa-alchemy/-/aa-alchemy-0.1.1.tgz#f7f989b2aaae127a49a61e1dde6d6f52d40d0018"
-  integrity sha512-rVQZNb1QmfQoxDyaXuinB0pfrKENLydwH57TWXJn4wFW+3c+iM6xM/tsfx6zxzA7HTwodcRw8//wMvdF+5KQmg==
-  dependencies:
-    "@alchemy/aa-core" "^0.1.1"
-    viem "^1.16.2"
-
-"@alchemy/aa-core@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@alchemy/aa-core/-/aa-core-0.1.1.tgz#2c81e34c0ca939897004c68d80250f1b4b423ff2"
-  integrity sha512-vEfCx9MJMTCMpmB3cY+TcM65znP8zcMTaiYE7By3+krhd7ViflWdEILe5HGGzCALGqdr6pUaBI7n08eVoyo6KQ==
-  dependencies:
-    abitype "^0.8.3"
-    eventemitter3 "^5.0.1"
-    viem "^1.16.2"
-
 "@alloc/quick-lru@^5.2.0":
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/@alloc/quick-lru/-/quick-lru-5.2.0.tgz#7bf68b20c0a350f936915fcae06f58e32007ce30"
@@ -3548,11 +3523,6 @@ abitype@0.9.8:
   resolved "https://registry.yarnpkg.com/abitype/-/abitype-0.9.8.tgz#1f120b6b717459deafd213dfbf3a3dd1bf10ae8c"
   integrity sha512-puLifILdm+8sjyss4S+fsUN09obiT1g2YW6CtcQF+QDzxR0euzgEB29MZujC6zMk2a6SVmtttq1fc6+YFA7WYQ==
 
-abitype@^0.8.3:
-  version "0.8.11"
-  resolved "https://registry.yarnpkg.com/abitype/-/abitype-0.8.11.tgz#66e1cf2cbf46f48d0e57132d7c1c392447536cc1"
-  integrity sha512-bM4v2dKvX08sZ9IU38IN5BKmN+ZkOSd2oI4a9f0ejHYZQYV6cDr7j+d95ga0z2XHG36Y4jzoG5Z7qDqxp7fi/A==
-
 abort-controller@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/abort-controller/-/abort-controller-3.0.0.tgz#eaf54d53b62bae4138e809ca225c8439a6efb392"
@@ -4588,11 +4558,6 @@ eventemitter3@^4.0.7:
   version "4.0.7"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.7.tgz#2de9b68f6528d5644ef5c59526a1b4a07306169f"
   integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
-
-eventemitter3@^5.0.1:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-5.0.1.tgz#53f5ffd0a492ac800721bb42c66b841de96423c4"
-  integrity sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==
 
 events@^1.1.1:
   version "1.1.1"
@@ -7471,7 +7436,7 @@ viem@^1.0.0:
     isows "1.0.3"
     ws "8.13.0"
 
-viem@^1.16.2, viem@^1.16.6:
+viem@^1.16.6:
   version "1.16.6"
   resolved "https://registry.yarnpkg.com/viem/-/viem-1.16.6.tgz#78118c9269506a59e2bc4deab13f1646e113d3fc"
   integrity sha512-jcWcFQ+xzIfDwexwPJRvCuCRJKEkK9iHTStG7mpU5MmuSBpACs4nATBDyXNFtUiyYTFzLlVEwWkt68K0nCSImg==

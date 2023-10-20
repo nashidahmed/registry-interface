@@ -38,6 +38,7 @@ export default function useSession() {
           Date.now() + 1000 * 60 * 60 * 24 * 7
         ).toISOString() // 1 week
 
+        console.log(pkp)
         // Generate session sigs
         const sessionSigs = await getSessionSigs({
           pkpPublicKey: pkp.publicKey,
