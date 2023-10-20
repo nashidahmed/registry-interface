@@ -7,7 +7,7 @@ import {
   SismoConnectButton,
   SismoConnectResponse,
 } from "@sismo-core/sismo-connect-react"
-import { FormEvent, useContext, useState } from "react"
+import { FormEvent, SetStateAction, useContext, useState } from "react"
 import Input from "@/components/Input"
 import Textarea from "@/components/Textarea"
 import { ethers } from "ethers"
@@ -17,43 +17,42 @@ import useAccount from "@/hooks/useAccount"
 import useSession from "@/hooks/useSession"
 import useBiconomy from "@/hooks/useBiconomy"
 import Link from "next/link"
+import useSismo from "@/hooks/useSismo"
+import usePkpEthers from "@/hooks/usePkpEthers"
+import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
+import { WalletContext } from "@/layout"
 
 export default function CreateIssuer() {
-  const { getAuthMethod } = useAuthenticate()
-  const { getAccount } = useAccount()
-  const { initSession } = useSession()
+  const { pkpWallet, setPkpWallet } = useContext<{
+    pkpWallet: PKPEthersWallet
+    setPkpWallet: React.Dispatch<SetStateAction<PKPEthersWallet>>
+  }>(WalletContext)
   const { submitWithPersonalSign, loading, txHash } = useBiconomy()
 
   const theRegistryContract = process.env
-    .NEXT_PUBLIC_THE_REGISTRY_CONTRACT_ADDRESS as string
+    .NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS as string
 
-  const [responseBytes, setResponseBytes] = useState("")
   const [name, setName] = useState("")
   const [website, setWebsite] = useState("")
   const [image, setImage] = useState("")
   const [desc, setDesc] = useState("")
+  const { responseBytes, setResponse } = useSismo()
 
   async function createIssuer(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    let userAddress = "0xd697b55Daf2add294F8f1C58377253573E5A61c8"
+    if (pkpWallet) {
+      let contractInterface = new ethers.utils.Interface(theRegistryAbi)
+      let functionSignature = contractInterface.encodeFunctionData(
+        "createIssuer",
+        [responseBytes, name, website, image, desc]
+      )
 
-    let contractInterface = new ethers.utils.Interface(theRegistryAbi)
-    let functionSignature = contractInterface.encodeFunctionData(
-      "createIssuer",
-      [responseBytes, name, website, image, desc]
-    )
-
-    submitWithPersonalSign(functionSignature, userAddress)
-  }
-
-  function init() {
-    const authMethod = getAuthMethod()
-    const account = getAccount()
-    console.log(getAuthMethod(), getAccount())
-    // If user is authenticated and has selected an account, initialize session
-    if (authMethod && account) {
-      initSession(authMethod, account)
+      submitWithPersonalSign(
+        functionSignature,
+        pkpWallet,
+        process.env.NEXT_PUBLIC_BICONOMY_CREATE_API_ID as string
+      )
     }
   }
 
@@ -95,7 +94,7 @@ export default function CreateIssuer() {
             }}
             auth={{ authType: AuthType.TWITTER }}
             onResponseBytes={(bytes: string) => {
-              setResponseBytes(bytes)
+              setResponse(bytes)
             }}
             text="Verify Twitter with Sismo"
             overrideStyle={{ height: "2.25rem", fontSize: "1rem" }}
@@ -130,10 +129,6 @@ export default function CreateIssuer() {
             </Link>
           </div>
         )}
-
-        <div className="mx-auto">
-          <Button onClick={() => init()}>Init session</Button>
-        </div>
       </form>
     </div>
   )

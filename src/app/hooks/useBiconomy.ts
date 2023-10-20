@@ -2,6 +2,11 @@ import { Contract, ethers } from "ethers"
 import { useState } from "react"
 import biconomyForwarderAbi from "/public/abis/Biconomy.json"
 import abi from "ethereumjs-abi"
+import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
+import { AlchemyProvider } from "@alchemy/aa-alchemy"
+import { polygonMumbai } from "viem/chains"
+import { LightSmartContractAccount } from "@alchemy/aa-accounts"
+import { SmartAccountSigner } from "@alchemy/aa-core"
 
 export interface ICreateIssuerRequest {
   responseBytes: string
@@ -130,7 +135,8 @@ export default function useBiconomy() {
   const submitWithPersonalSign = async (
     // data: ICreateIssuerRequest,
     functionSignature: string,
-    userAddress: string
+    pkpWallet: PKPEthersWallet,
+    apiId: string
   ) => {
     setLoading(true)
     setError(undefined)
@@ -139,14 +145,12 @@ export default function useBiconomy() {
     )
 
     // const signer = this.walletProvider.getSigner()
-    const signer = new ethers.Wallet(
-      process.env.NEXT_PUBLIC_PRIVATE_KEY as string,
-      provider
-    )
+    console.log("---------  11----------------")
+    const signer = pkpWallet
     let gasPrice = await provider.getGasPrice()
     let gasLimit = await provider.estimateGas({
       to: theRegistryContract,
-      from: userAddress,
+      from: pkpWallet.address,
       data: functionSignature,
     })
 
@@ -157,31 +161,34 @@ export default function useBiconomy() {
       signer
     )
 
-    console.log("------------1-------------")
-    const batchNonce = await forwarderContract.getNonce(userAddress, 0)
-    console.log("------------2-------------")
+    console.log(forwarderContract)
+    const batchNonce = await forwarderContract.getNonce(pkpWallet.address, 0)
     // const batchId = await forwarderContract.getBatch(userAddress)
 
+    console.log("---------  11----------------")
     const to = theRegistryContract
     const gasLimitNum = Number(gasLimit.toNumber().toString())
     const request = buildForwardTxRequest(
-      userAddress,
+      pkpWallet.address,
       to,
       gasLimitNum,
       "0",
-      batchNonce,
+      "0",
       functionSignature
     )
-    console.log("------------2-------------")
 
     const dataToSign = getDataToSignForPersonalSign(request)
-
-    console.log(dataToSign)
 
     signer
       .signMessage(dataToSign)
       .then(async (sig) => {
-        await sendTransaction(userAddress, request, sig, "PERSONAL_SIGN")
+        await sendTransaction(
+          pkpWallet.address,
+          request,
+          sig,
+          "PERSONAL_SIGN",
+          apiId
+        )
       })
       .catch(function (err) {
         setError(err as Error)
@@ -193,14 +200,16 @@ export default function useBiconomy() {
     from: string,
     request: ISignRequest,
     sig: string,
-    signatureType: string
+    signatureType: string,
+    apiId: string
   ) => {
     setError(undefined)
+    console.log(apiId)
     let params = [request, sig]
     console.log(
       JSON.stringify({
         to: theRegistryContract,
-        apiId: process.env.NEXT_PUBLIC_BICONOMY_API_ID as string,
+        apiId,
         params,
         from,
         signatureType,
@@ -214,7 +223,7 @@ export default function useBiconomy() {
       },
       body: JSON.stringify({
         to: theRegistryContract,
-        apiId: process.env.NEXT_PUBLIC_BICONOMY_API_ID as string,
+        apiId,
         params,
         from,
         signatureType,
@@ -238,6 +247,7 @@ export default function useBiconomy() {
   return {
     submitWithPersonalSign,
     loading,
+    setLoading,
     txHash,
   }
 }

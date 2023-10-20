@@ -1,9 +1,9 @@
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 import { SessionSigs, IRelayPKP } from "@lit-protocol/types"
 
 export default function usePkpEthers() {
-  const [pkpWallet, setPkpWallet] = useState<PKPEthersWallet>()
+  const [pkpEthers, setPkpEthers] = useState<PKPEthersWallet>()
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error>()
 
@@ -16,12 +16,10 @@ export default function usePkpEthers() {
           controllerSessionSigs: sessionSigs,
           // Or you can also pass in controllerSessionSigs
           pkpPubKey: account?.publicKey as string,
-          rpc: process.env.NEXT_PUBLIC_INFURA_RPC,
+          rpc: process.env.NEXT_PUBLIC_INFURA_RPC as string,
         })
         await wallet.init()
-        localStorage.setItem("pkpWallet", JSON.stringify(wallet))
-        console.log(wallet)
-        setPkpWallet(wallet)
+        setPkpEthers(wallet)
       } catch (err) {
         setError(err as Error)
       } finally {
@@ -31,16 +29,9 @@ export default function usePkpEthers() {
     []
   )
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (localStorage.getItem("pkpWallet") && !pkpWallet) {
-        setPkpWallet(pkpWallet)
-      }
-    }
-  }, [pkpWallet])
-
   return {
     connect,
-    pkpWallet,
+    pkpEthers,
+    loading,
   }
 }

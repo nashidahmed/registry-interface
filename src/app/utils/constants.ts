@@ -1,5 +1,7 @@
+export const SISMO_RES = "sismo-response"
 export const LIT_ACCOUNT = "lit-account"
 export const LIT_AUTH_METHOD = "lit-auth-method"
+export const PKP_WALLET = "pkp-wallet"
 
 export const DEFAULT_CHAIN_ID = 80001
 export const CHAINS = [

@@ -3,26 +3,44 @@
 import theRegistryAbi from "/public/abis/TheRegistry.json"
 
 import { ethers } from "ethers"
-import { FormEvent, useEffect, useState } from "react"
+import {
+  FormEvent,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react"
 import { useAccount } from "wagmi"
 import { writeContract } from "@wagmi/core"
 import { Web3Storage } from "web3.storage"
 import Input from "@/components/Input"
 import Button from "@/components/Button"
-import Lit from "@/utils/lit"
 import useAuthenticate from "@/hooks/useAuthenticate"
+import useBiconomy from "@/hooks/useBiconomy"
+import {
+  AuthType,
+  SismoConnectButton,
+  useSismoConnect,
+} from "@sismo-core/sismo-connect-react"
+import Link from "next/link"
+import useSismo from "@/hooks/useSismo"
+import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
+import { WalletContext } from "@/layout"
 
 export default function Upload() {
-  const { address } = useAccount()
-  const { getAuthMethod } = useAuthenticate()
+  const { pkpWallet, setPkpWallet } = useContext<{
+    pkpWallet: PKPEthersWallet
+    setPkpWallet: React.Dispatch<SetStateAction<PKPEthersWallet>>
+  }>(WalletContext)
 
   const [cid, setCid] = useState<string>()
   const [file, setFile] = useState<File>()
   const [title, setTitle] = useState<string>("")
-
-  useEffect(() => {})
+  const { responseBytes, setResponse } = useSismo()
+  const { submitWithPersonalSign, loading, setLoading, txHash } = useBiconomy()
 
   async function uploadFile() {
+    setLoading(true)
     const client = new Web3Storage({
       token: process.env.NEXT_PUBLIC_WEB3_STORAGE_TOKEN as string,
     })
@@ -31,17 +49,43 @@ export default function Upload() {
       onRootCidReady: (localCid: string) => {
         setCid(localCid)
       },
-      onStoredChunk: (bytes: any) =>
-        console.log(`> 🛰 sent ${bytes.toLocaleString()} bytes to web3.storage`),
+      onStoredChunk: (bytes: any) => {
+        console.log(`> 🛰 sent ${bytes.toLocaleString()} bytes to web3.storage`)
+        setLoading(false)
+      },
     })
+
+    if (pkpWallet) {
+      let contractInterface = new ethers.utils.Interface(theRegistryAbi)
+      let functionSignature = contractInterface.encodeFunctionData(
+        "uploadDocument",
+        [
+          responseBytes,
+          title,
+          cid,
+          "0xd697b55Daf2add294F8f1C58377253573E5A61c8",
+        ]
+      )
+
+      console.log("---------  11----------------")
+      submitWithPersonalSign(
+        functionSignature,
+        pkpWallet,
+        process.env.NEXT_PUBLIC_BICONOMY_UPLOAD_API_ID as string
+      )
+    }
   }
 
   async function claimKey() {
-    const authMethod = getAuthMethod()
-    console.log(authMethod)
-    Lit.claimKey(authMethod)
+    // const authMethod = getAuthMethod()
+    // console.log(authMethod)
+    // Lit.claimKey(authMethod)
     // Lit.authenticate(title)
   }
+
+  // function uploadDocument(event: FormEvent<HTMLFormElement>) {
+  //   event.preventDefault()
+  // }
 
   // async function handleSubmit(event: FormEvent) {
   //   // don't reload the page!
@@ -64,7 +108,7 @@ export default function Upload() {
 
   //   const { hash } = await writeContract({
   //     address: process.env
-  //       .NEXT_PUBLIC_THE_REGISTRY_CONTRACT_ADDRESS as `0x${string}`,
+  //       .NEXT_PUBLIC_DOCISSUE_CONTRACT_ADDRESS as `0x${string}`,
   //     abi: theRegistryAbi,
   //     functionName: "uploadDocument",
   //     args: [title, cid],
@@ -74,8 +118,8 @@ export default function Upload() {
   // }
 
   async function getPubKey() {
-    await Lit.computeKey("108320763296956109044")
-    await Lit.computeKey("demon.king.115@gmail.com")
+    // await Lit.computeKey("108320763296956109044")
+    // await Lit.computeKey("demon.king.115@gmail.com")
   }
 
   return (
@@ -99,9 +143,51 @@ export default function Upload() {
             required
           />
         </div>
+        {!responseBytes && (
+          <div className="mx-auto">
+            <SismoConnectButton
+              config={{
+                appId: process.env.NEXT_PUBLIC_SISMO_APP_ID as string,
+              }}
+              auth={{ authType: AuthType.TWITTER }}
+              onResponseBytes={(bytes: string) => {
+                setResponse(bytes)
+              }}
+              text="Verify Twitter with Sismo"
+              overrideStyle={{ height: "2.25rem", fontSize: "1rem" }}
+            />
+          </div>
+        )}
+
         <div className="mx-auto mt-8">
-          <Button onClick={uploadFile}>Upload document</Button>
+          <Button onClick={uploadFile}>
+            {loading ? (
+              <div className="flex gap-2">
+                Upload Document
+                <div>
+                  <div className="loader w-5 h-5"></div>
+                </div>
+              </div>
+            ) : (
+              "Upload Document"
+            )}
+          </Button>
         </div>
+        {txHash && (
+          <div className="text-center">
+            Uploaded document successfully.
+            <br />
+            Tx ID:{" "}
+            <Link
+              className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+              href={`https://mumbai.polygonscan.com/tx/${txHash}`}
+              passHref
+              target="_blank"
+            >
+              {txHash}
+            </Link>
+          </div>
+        )}
 
         <div className="mx-auto mt-8">
           <Button onClick={claimKey}>Claim key</Button>

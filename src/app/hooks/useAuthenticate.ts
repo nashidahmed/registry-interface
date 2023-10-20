@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { isSignInRedirect } from "@lit-protocol/lit-auth-client"
 import { AuthMethod } from "@lit-protocol/types"
-import Lit from "@/utils/lit"
-import { useConnect } from "wagmi"
-import { LIT_AUTH_METHOD } from "@/utils/constants"
+import { authenticateWithGoogle } from "@/utils/lit"
 
 export default function useAuthenticate(redirectUri?: string) {
   const [authMethod, setAuthMethod] = useState<AuthMethod>()
@@ -19,13 +17,9 @@ export default function useAuthenticate(redirectUri?: string) {
     setAuthMethod(undefined)
 
     try {
-      const result: AuthMethod = (await Lit.authenticateWithGoogle(
-        redirectUri as string
-      )) as AuthMethod
-      console.log(result)
-      if (typeof window !== undefined) {
-        localStorage.setItem(LIT_AUTH_METHOD, JSON.stringify(result))
-      }
+      const result: AuthMethod = (await authenticateWithGoogle(
+        redirectUri as any
+      )) as any
       setAuthMethod(result)
     } catch (err) {
       setError(err as Error)
@@ -40,26 +34,11 @@ export default function useAuthenticate(redirectUri?: string) {
       // If redirected, authenticate with social provider
       authWithGoogle()
     }
-  }, [redirectUri])
-
-  const getAuthMethod = () => {
-    return typeof window !== "undefined"
-      ? localStorage.getItem(LIT_AUTH_METHOD) &&
-          JSON.parse(localStorage.getItem(LIT_AUTH_METHOD) as string)
-      : undefined
-  }
-
-  const removeAuthMethod = () => {
-    setAuthMethod(undefined)
-    localStorage.removeItem(LIT_AUTH_METHOD)
-  }
+  }, [redirectUri, authWithGoogle])
 
   return {
     authMethod,
-    setAuthMethod,
     loading,
     error,
-    getAuthMethod,
-    removeAuthMethod,
   }
 }

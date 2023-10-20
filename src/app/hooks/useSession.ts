@@ -1,11 +1,7 @@
 import { useCallback, useState } from "react"
 import { AuthMethod } from "@lit-protocol/types"
-import Lit from "@/utils/lit"
-import {
-  LitAbility,
-  LitAccessControlConditionResource,
-  LitPKPResource,
-} from "@lit-protocol/auth-helpers"
+import { getSessionSigs } from "@/utils/lit"
+import { LitAbility, LitActionResource } from "@lit-protocol/auth-helpers"
 import { IRelayPKP } from "@lit-protocol/types"
 import { SessionSigs, SessionKeyPair } from "@lit-protocol/types"
 import { LOCAL_STORAGE_KEYS } from "@lit-protocol/constants"
@@ -27,7 +23,6 @@ export default function useSession() {
    */
   const initSession = useCallback(
     async (authMethod: AuthMethod, pkp: IRelayPKP): Promise<void> => {
-      console.log("Initiating session")
       setLoading(true)
       setError(undefined)
       try {
@@ -35,7 +30,7 @@ export default function useSession() {
         const chain = "ethereum"
         const resourceAbilities = [
           {
-            resource: new LitPKPResource("*"),
+            resource: new LitActionResource("*"),
             ability: LitAbility.PKPSigning,
           },
         ]
@@ -43,7 +38,8 @@ export default function useSession() {
           Date.now() + 1000 * 60 * 60 * 24 * 7
         ).toISOString() // 1 week
 
-        console.log({
+        // Generate session sigs
+        const sessionSigs = await getSessionSigs({
           pkpPublicKey: pkp.publicKey,
           authMethod,
           sessionSigsParams: {
@@ -53,26 +49,11 @@ export default function useSession() {
           },
         })
 
-        // Generate session sigs
-        const sessionSigs = await Lit.getSessionSigs({
-          pkpPublicKey: pkp.publicKey,
-          authMethod,
-          sessionSigsParams: {
-            chain,
-            expiration,
-            resourceAbilityRequests: [],
-          },
-        })
-        console.log("----------  2 --------------")
-
-        console.log(sessionSigs)
         setSessionSigs(sessionSigs)
       } catch (err) {
-        console.log(error)
         setError(err as Error)
       } finally {
         setLoading(false)
-        console.log("Initiated session")
       }
     },
     []
