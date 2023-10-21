@@ -15,7 +15,7 @@ export default function User() {
   return (
     <div className="flex flex-col items-center gap-12">
       <div className="text-center text-4xl font-mono mt-48">
-        Please sign in to view your documents
+        Please sign in to request/view documents
       </div>
     </div>
   )

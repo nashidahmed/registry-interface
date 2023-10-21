@@ -4,7 +4,7 @@ import { Database } from "@tableland/sdk"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
-interface Issuer {
+export interface Issuer {
   id: number
   name: string
   website: string
