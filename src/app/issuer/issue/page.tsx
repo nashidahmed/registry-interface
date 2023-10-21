@@ -16,7 +16,7 @@ import { WalletContext } from "@/layout"
 import { encrypt, getAddress } from "@/utils/lit"
 import { SessionSigs } from "@lit-protocol/types"
 
-export default function Upload() {
+export default function Issue() {
   const [isClient, setIsClient] = useState(false)
   const { pkpWallet, sessionSigs } = useContext<{
     pkpWallet?: PKPEthersWallet
@@ -26,6 +26,7 @@ export default function Upload() {
   const [cid, setCid] = useState<string>()
   const [file, setFile] = useState<File>()
   const [title, setTitle] = useState<string>("")
+  const [discord, setDiscord] = useState<string>("")
   const { responseBytes, setResponse } = useSismo()
   const { submitWithPersonalSign, loading, setLoading, txHash } = useBiconomy()
 
@@ -83,15 +84,22 @@ export default function Upload() {
   return (
     <div className="w-full">
       <header className="h-24 flex items-center justify-center text-4xl">
-        Upload a document
+        Issue a document
       </header>
-      <div className="max-w-4xl p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 flex flex-col gap-5 mx-auto">
+      <div className="max-w-4xl p-4 bg-white border border-gray-200 rounded-lg shadow-2xl sm:p-6 md:p-8 flex flex-col gap-5 mx-auto">
         <Input
           id="title"
           label="Title"
           value={title}
           placeholder="Enter the document title"
           onChange={(e) => setTitle(e.target.value)}
+        />
+        <Input
+          id="discord"
+          label="Discord ID"
+          value={discord}
+          placeholder="Enter the receiver's Discord ID"
+          onChange={(e) => setDiscord(e.target.value)}
         />
         <div>
           <input
@@ -118,23 +126,23 @@ export default function Upload() {
           </div>
         )}
 
-        <div className="mx-auto mt-8">
+        <div className="mx-auto">
           <Button onClick={uploadFile} disabled={loading}>
             {loading ? (
               <div className="flex gap-2">
                 <div>
                   <div className="loader w-5 h-5"></div>
                 </div>
-                Uploading Document
+                Issuing Document
               </div>
             ) : (
-              "Upload Document"
+              "Issue Document"
             )}
           </Button>
         </div>
         {txHash && (
           <div className="text-center">
-            Uploaded document successfully.
+            Issued document successfully.
             <br />
             Tx ID:{" "}
             <Link

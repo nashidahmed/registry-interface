@@ -14,13 +14,13 @@ export default function Home() {
       <div className=" flex flex-col gap-12 max-w-xs text-center">
         <Link
           href={"/issuer/create"}
-          className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-6 px-12 border border-gray-400 rounded-full shadow text-2xl"
+          className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-6 px-12 border border-gray-400 rounded-full shadow-2xl text-2xl"
         >
           Become an Issuer
         </Link>
         <Link
           href={"/user"}
-          className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-6 px-12 border border-gray-400 rounded-full shadow text-2xl"
+          className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-6 px-12 border border-gray-400 rounded-full shadow-2xl text-2xl"
         >
           For Users
         </Link>

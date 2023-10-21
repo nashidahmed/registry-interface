@@ -58,7 +58,7 @@ export default function View({ params }: { params: { id: string } }) {
 
   return issuer ? (
     <div className="w-full">
-      <div className="max-w-4xl p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 flex flex-col gap-5 mx-auto">
+      <div className="max-w-4xl p-4 bg-white border border-gray-200 rounded-lg shadow-2xl sm:p-6 md:p-8 flex flex-col gap-5 mx-auto">
         <div className="flex justify-between items-center">
           <div className="text-5xl">
             <div className="flex gap-4 items-center">

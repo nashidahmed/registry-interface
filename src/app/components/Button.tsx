@@ -23,7 +23,7 @@ export default function Button({
   ) : (
     <button
       type={type}
-      className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow disabled:opacity-50 disabled:hover:cursor-not-allowed"
+      className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow-2xl disabled:opacity-50 disabled:hover:cursor-not-allowed"
       onClick={onClick}
       disabled={disabled}
     >

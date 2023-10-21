@@ -2,6 +2,7 @@ import {
   GoogleProvider,
   LitAuthClient,
   BaseProvider,
+  DiscordProvider,
 } from "@lit-protocol/lit-auth-client"
 import {
   AuthMethodType,
@@ -73,20 +74,37 @@ export async function authenticateWithGoogle(
 }
 
 /**
+ * Redirect to Lit login
+ */
+export async function signInWithDiscord(redirectUri: string): Promise<void> {
+  const discordProvider = litAuthClient.initProvider<DiscordProvider>(
+    ProviderType.Discord,
+    { redirectUri }
+  )
+  await discordProvider.signIn()
+}
+
+/**
+ * Get auth method object from redirect
+ */
+export async function authenticateWithDiscord(
+  redirectUri: string
+): Promise<AuthMethod | undefined> {
+  const discordProvider = litAuthClient.initProvider<DiscordProvider>(
+    ProviderType.Discord,
+    { redirectUri }
+  )
+  const authMethod = await discordProvider.authenticate()
+  return authMethod
+}
+
+/**
  * Get auth method object from redirect
  */
 export async function claimKey(
   authMethod: AuthMethod
 ): Promise<ClaimKeyResponse | undefined> {
   await litNodeClient.connect()
-
-  // console.log(JSON.parse(atob(authMethod.accessToken.split(".")[1])))
-  // const token = authMethod.accessToken.split(".")
-  // const data = JSON.parse(atob(token[1]))
-  // data["sub"] = data["email"]
-  // token[1] = btoa(JSON.stringify(data))
-  // authMethod.accessToken = token.join(".")
-  // console.log(JSON.parse(atob(authMethod.accessToken.split(".")[1])))
 
   let claimReq = {
     authMethod,
@@ -103,7 +121,20 @@ export async function claimKey(
   }
 }
 
-export async function getAddress(sub: string): Promise<string> {
+export async function getDiscordAddress(sub: string): Promise<string> {
+  await litNodeClient.connect()
+  const keyId = litNodeClient.computeHDKeyId(
+    sub,
+    process.env.NEXT_PUBLIC_GOOGLE_APP_ID as string
+  )
+
+  const publicKey = litNodeClient.computeHDPubKey(keyId.slice(2))
+  console.log(publicKey)
+
+  return ethers.utils.computeAddress(`0x${publicKey}`)
+}
+
+export async function getGoogleAddress(sub: string): Promise<string> {
   await litNodeClient.connect()
   const keyId = litNodeClient.computeHDKeyId(
     sub,
@@ -256,6 +287,8 @@ function getProviderByAuthMethod(authMethod: AuthMethod) {
   switch (authMethod.authMethodType) {
     case AuthMethodType.GoogleJwt:
       return litAuthClient.getProvider(ProviderType.Google) as BaseProvider
+    case AuthMethodType.Discord:
+      return litAuthClient.getProvider(ProviderType.Discord)
     default:
       return
   }

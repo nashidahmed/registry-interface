@@ -97,7 +97,7 @@ export default function CreateIssuer() {
         Create a profile
       </header>
       <form
-        className="max-w-4xl p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 flex flex-col gap-5 mx-auto"
+        className="max-w-4xl p-4 bg-white border border-gray-200 rounded-lg shadow-2xl sm:p-6 md:p-8 flex flex-col gap-5 mx-auto"
         onSubmit={createIssuer}
       >
         <Input
