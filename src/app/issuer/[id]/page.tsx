@@ -57,11 +57,8 @@ export default function View({ params }: { params: { id: string } }) {
   // }, [params.id, getIssuer])
 
   return issuer ? (
-    <div className="px-96">
-      <header className="h-32 flex items-center justify-center text-4xl">
-        Issuer ID: {issuer.id}
-      </header>
-      <div className="container">
+    <div className="w-full">
+      <div className="max-w-4xl p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 flex flex-col gap-5 mx-auto">
         <div className="flex justify-between items-center">
           <div className="text-5xl">
             <div className="flex gap-4 items-center">
@@ -74,12 +71,6 @@ export default function View({ params }: { params: { id: string } }) {
                     currentTarget.src = "/icons/no-image.jpg"
                   }}
                 />
-
-                {/* <Avatar
-                label="Noun 97 circle"
-                shape="circle"
-                src={issuer.image}
-              /> */}
               </div>
               {issuer?.name}
               <object

@@ -3,25 +3,12 @@
 import theRegistryAbi from "/public/abis/TheRegistry.json"
 
 import { ethers } from "ethers"
-import {
-  FormEvent,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useState,
-} from "react"
-import { useAccount } from "wagmi"
-import { writeContract } from "@wagmi/core"
+import { useContext, useEffect, useState } from "react"
 import { Web3Storage } from "web3.storage"
 import Input from "@/components/Input"
 import Button from "@/components/Button"
-import useAuthenticate from "@/hooks/useAuthenticate"
 import useBiconomy from "@/hooks/useBiconomy"
-import {
-  AuthType,
-  SismoConnectButton,
-  useSismoConnect,
-} from "@sismo-core/sismo-connect-react"
+import { AuthType, SismoConnectButton } from "@sismo-core/sismo-connect-react"
 import Link from "next/link"
 import useSismo from "@/hooks/useSismo"
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
@@ -30,6 +17,7 @@ import { encrypt, getAddress } from "@/utils/lit"
 import { SessionSigs } from "@lit-protocol/types"
 
 export default function Upload() {
+  const [isClient, setIsClient] = useState(false)
   const { pkpWallet, sessionSigs } = useContext<{
     pkpWallet?: PKPEthersWallet
     sessionSigs?: SessionSigs
@@ -40,6 +28,10 @@ export default function Upload() {
   const [title, setTitle] = useState<string>("")
   const { responseBytes, setResponse } = useSismo()
   const { submitWithPersonalSign, loading, setLoading, txHash } = useBiconomy()
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   async function uploadFile() {
     if (file && sessionSigs) {
@@ -97,6 +89,7 @@ export default function Upload() {
         <Input
           id="title"
           label="Title"
+          value={title}
           placeholder="Enter the document title"
           onChange={(e) => setTitle(e.target.value)}
         />
@@ -109,7 +102,7 @@ export default function Upload() {
             required
           />
         </div>
-        {!responseBytes && (
+        {responseBytes && (
           <div className="mx-auto">
             <SismoConnectButton
               config={{
@@ -129,10 +122,10 @@ export default function Upload() {
           <Button onClick={uploadFile} disabled={loading}>
             {loading ? (
               <div className="flex gap-2">
-                Uploading Document
                 <div>
                   <div className="loader w-5 h-5"></div>
                 </div>
+                Uploading Document
               </div>
             ) : (
               "Upload Document"

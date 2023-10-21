@@ -13,7 +13,7 @@ import usePkpEthers from "@/hooks/usePkpEthers"
 import { WalletContext } from "@/layout"
 import { SessionSigs } from "@lit-protocol/types"
 
-export default function Header() {
+export default function Header({ isIssuer }: { isIssuer?: boolean }) {
   const pathname = usePathname()
   const redirectUri = ORIGIN + pathname
   const { pkpWallet, setPkpWallet, setSessionSigs } = useContext<{
@@ -87,6 +87,8 @@ export default function Header() {
     typeof window !== "undefined"
       ? localStorage.removeItem(LOCAL_STORAGE_KEYS.SESSION_KEY)
       : undefined
+
+    router.push("/")
   }
 
   function ButtonText() {
@@ -132,8 +134,12 @@ export default function Header() {
         The Registry
       </Link>
       <div className="flex items-center gap-6">
-        <Link href={"/issuer/upload"}>Upload Content</Link>
-        <Link href={"/issuer/create"}>Create Profile</Link>
+        {isIssuer && (
+          <>
+            <Link href={"/issuer/upload"}>Upload Content</Link>
+            <Link href={"/issuer/create"}>Create Profile</Link>
+          </>
+        )}
         <button
           type="button"
           className={`flex gap-2 items-center bg-white hover:${
@@ -146,9 +152,11 @@ export default function Header() {
           }
           onClick={pkpWallet ? handleLogout : handleGoogleLogin}
         >
-          <div className="btn__icon">
-            <object data="/icons/google.svg" type="image/svg+xml"></object>
-          </div>
+          <object
+            className="h-8 w-8"
+            data="/icons/google.svg"
+            type="image/svg+xml"
+          ></object>
           <div className="flex gap-2 items-center">
             <ButtonText />
           </div>

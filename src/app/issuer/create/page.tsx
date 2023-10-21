@@ -7,7 +7,13 @@ import {
   SismoConnectButton,
   SismoConnectResponse,
 } from "@sismo-core/sismo-connect-react"
-import { FormEvent, SetStateAction, useContext, useState } from "react"
+import {
+  FormEvent,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react"
 import Input from "@/components/Input"
 import Textarea from "@/components/Textarea"
 import { ethers } from "ethers"
@@ -38,10 +44,29 @@ export default function CreateIssuer() {
   const [desc, setDesc] = useState("")
   const { responseBytes, setResponse } = useSismo()
 
+  useEffect(() => {
+    console.log("test")
+    if (
+      typeof window !== "undefined" &&
+      sessionStorage.getItem("create-form")
+    ) {
+      const formData = JSON.parse(
+        sessionStorage.getItem("create-form") as string
+      )
+      console.log(formData.name)
+      if (formData.name) setName(formData.name)
+      if (formData.website) setWebsite(formData.website)
+      if (formData.desc) setDesc(formData.desc)
+      if (formData.image) setImage(formData.image)
+    }
+  }, [])
+
   async function createIssuer(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     if (pkpWallet) {
+      sessionStorage.getItem("create-form")
+
       let contractInterface = new ethers.utils.Interface(theRegistryAbi)
       let functionSignature = contractInterface.encodeFunctionData(
         "createIssuer",
@@ -54,6 +79,16 @@ export default function CreateIssuer() {
         process.env.NEXT_PUBLIC_BICONOMY_CREATE_API_ID as string
       )
     }
+  }
+
+  function saveForm() {
+    // const formData = {
+    //   name,
+    //   website,
+    //   image,
+    //   desc,
+    // }
+    // sessionStorage.setItem("create-form", JSON.stringify(formData))
   }
 
   return (
@@ -69,26 +104,34 @@ export default function CreateIssuer() {
           id="organization_name"
           label="Organization Name"
           placeholder="XYZ University"
+          value={name}
           onChange={(e) => setName(e.target.value)}
+          onBlur={saveForm}
         />
 
         <Input
           id="website_link"
           label="Website link"
+          value={website}
           placeholder="https://www.example.com/"
           onChange={(e) => setWebsite(e.target.value)}
+          onBlur={saveForm}
         />
         <Input
           id="image_link"
           label="Image link (rounded)"
+          value={image}
           placeholder="https://www.example-host.com/image.png"
           onChange={(e) => setImage(e.target.value)}
+          onBlur={saveForm}
         />
         <Textarea
           id="short_description"
           label="Give a short description of your organization"
+          value={desc}
           placeholder="Enter a short description (Eg. Official account of XYZ University)"
           onChange={(e) => setDesc(e.target.value)}
+          onBlur={saveForm}
         />
         <div className="mx-auto">
           <SismoConnectButton
