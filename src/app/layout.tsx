@@ -59,11 +59,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <WagmiConfig config={wagmiConfig}>
-          <div className="min-h-screen px-24">
+          <div>
             <WalletContext.Provider
               value={{ pkpWallet, setPkpWallet, sessionSigs, setSessionSigs }}
             >
-              <Header />
               {children}
             </WalletContext.Provider>
           </div>

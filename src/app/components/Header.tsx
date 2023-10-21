@@ -132,8 +132,8 @@ export default function Header() {
         The Registry
       </Link>
       <div className="flex items-center gap-6">
-        <Link href={"/upload"}>Upload Content</Link>
-        <Link href={"/issuer/create"}>Become an issuer</Link>
+        <Link href={"/issuer/upload"}>Upload Content</Link>
+        <Link href={"/issuer/create"}>Create Profile</Link>
         <button
           type="button"
           className={`flex gap-2 items-center bg-white hover:${

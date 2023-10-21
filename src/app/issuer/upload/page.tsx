@@ -89,11 +89,11 @@ export default function Upload() {
   }
 
   return (
-    <div className="px-96">
-      <header className="h-32 flex items-center justify-center text-4xl">
+    <div className="w-full">
+      <header className="h-24 flex items-center justify-center text-4xl">
         Upload a document
       </header>
-      <div className="container">
+      <div className="max-w-4xl p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 flex flex-col gap-5 mx-auto">
         <Input
           id="title"
           label="Title"
@@ -126,10 +126,10 @@ export default function Upload() {
         )}
 
         <div className="mx-auto mt-8">
-          <Button onClick={uploadFile}>
+          <Button onClick={uploadFile} disabled={loading}>
             {loading ? (
               <div className="flex gap-2">
-                Upload Document
+                Uploading Document
                 <div>
                   <div className="loader w-5 h-5"></div>
                 </div>
