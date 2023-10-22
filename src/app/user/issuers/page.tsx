@@ -66,7 +66,7 @@ export default function Issuers() {
       let contractInterface = new ethers.utils.Interface(theRegistryAbi)
       let functionSignature = contractInterface.encodeFunctionData(
         "requestDocument",
-        [dataToEncryptHash, ciphertext, issuer.id, pkpWallet.address]
+        [dataToEncryptHash, ciphertext, `${issuer.id}`, pkpWallet.address]
       )
 
       submitWithPersonalSign(

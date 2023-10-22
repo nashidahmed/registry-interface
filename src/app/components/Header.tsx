@@ -11,8 +11,8 @@ export default function Header({ isIssuer }: { isIssuer?: boolean }) {
       <div className="flex items-center gap-6">
         {isIssuer ? (
           <>
-            <Link href={"/issuer/issue"}>Issue Document</Link>
-            <Link href={"/user/create"}>Create Profile</Link>
+            <Link href={"/issuer/requests"}>View requests</Link>
+            <Link href={"/issuer/create"}>Create Profile</Link>
           </>
         ) : (
           <Link href={"/user/issuers"}>View Issuers</Link>

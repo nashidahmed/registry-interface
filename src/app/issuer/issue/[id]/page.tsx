@@ -13,10 +13,10 @@ import Link from "next/link"
 import useSismo from "@/hooks/useSismo"
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
 import { WalletContext } from "@/layout"
-import { encrypt, getAddress } from "@/utils/lit"
 import { SessionSigs } from "@lit-protocol/types"
+import { encryptDocument } from "@/utils/lit"
 
-export default function Issue() {
+export default function Issue({ id }: { id: string }) {
   const [isClient, setIsClient] = useState(false)
   const { pkpWallet, sessionSigs } = useContext<{
     pkpWallet?: PKPEthersWallet
@@ -41,12 +41,10 @@ export default function Issue() {
         token: process.env.NEXT_PUBLIC_WEB3_STORAGE_TOKEN as string,
       })
 
-      const receiver = await getAddress("113478391645363093325")
-
-      const { ciphertext, dataToEncryptHash } = await encrypt(
+      const { ciphertext, dataToEncryptHash } = await encryptDocument(
         file,
         sessionSigs,
-        receiver
+        id
       )
       console.log(ciphertext, dataToEncryptHash)
 
@@ -66,7 +64,7 @@ export default function Issue() {
         let contractInterface = new ethers.utils.Interface(theRegistryAbi)
         let functionSignature = contractInterface.encodeFunctionData(
           "uploadDocument",
-          [responseBytes, dataToEncryptHash, cid, receiver]
+          [responseBytes, dataToEncryptHash, cid, id]
         )
 
         console.log("---------  11----------------")
