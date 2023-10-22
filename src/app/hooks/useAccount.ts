@@ -21,7 +21,6 @@ export default function useAccount(authMethod?: AuthMethod) {
       try {
         // Fetch PKPs tied to given auth method
         const myPKPs = await getPKPs(authMethod)
-        console.log(myPKPs)
         let newPKP
         if (myPKPs.length > 0) {
           newPKP = myPKPs[0]

@@ -70,7 +70,6 @@ export default function DiscordSignIn() {
   useEffect(() => {
     if (pkpEthers && setPkpWallet) {
       setPkpWallet(pkpEthers)
-      console.log(pkpEthers)
     }
   }, [pkpEthers])
 
@@ -87,7 +86,6 @@ export default function DiscordSignIn() {
   }
 
   function ButtonText() {
-    // console.log(authLoading, accountLoading, account)
     if (authLoading) {
       return (
         <>

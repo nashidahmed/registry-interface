@@ -141,7 +141,6 @@ export default function useBiconomy() {
     )
 
     // const signer = this.walletProvider.getSigner()
-    console.log("---------  11----------------")
     const signer = pkpWallet
     let gasPrice = await provider.getGasPrice()
     let gasLimit = await provider.estimateGas({
@@ -157,11 +156,9 @@ export default function useBiconomy() {
       new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY as string, provider)
     )
 
-    console.log(forwarderContract)
     const batchNonce = await forwarderContract.getNonce(pkpWallet.address, 0)
     // const batchId = await forwarderContract.getBatch(userAddress)
 
-    console.log("---------  11----------------")
     const to = theRegistryContract
     const gasLimitNum = Number(gasLimit.toNumber().toString())
     const request = buildForwardTxRequest(
@@ -200,17 +197,7 @@ export default function useBiconomy() {
     apiId: string
   ) => {
     setError(undefined)
-    console.log(apiId)
     let params = [request, sig]
-    console.log(
-      JSON.stringify({
-        to: theRegistryContract,
-        apiId,
-        params,
-        from,
-        signatureType,
-      })
-    )
     fetch(`https://api.biconomy.io/api/v2/meta-tx/native`, {
       method: "POST",
       headers: {
@@ -227,13 +214,10 @@ export default function useBiconomy() {
     })
       .then((response) => response.json())
       .then(async function (result) {
-        console.log(result)
-        console.log(`Transaction sent by relayer with hash ${result.txHash}`)
         settxHash(result.txHash)
       })
       .catch(function (err) {
         setError(err as Error)
-        console.log(error)
       })
       .finally(() => {
         setLoading(false)

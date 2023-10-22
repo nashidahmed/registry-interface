@@ -89,7 +89,6 @@ export default function GoogleSignIn() {
   }
 
   function ButtonText() {
-    // console.log(authLoading, accountLoading, account)
     if (authLoading) {
       return (
         <>

@@ -67,7 +67,6 @@ export default function Issue() {
       const request = JSON.parse(
         sessionStorage.getItem("request-details") as string
       )
-      console.log(request)
       setRequest(request)
     }
   }
@@ -84,9 +83,8 @@ export default function Issue() {
         sessionSigs,
         request.userAddress
       )
-      console.log(ciphertext, dataToEncryptHash)
 
-      const cid = await client.put([new File([ciphertext], "test")], {
+      const cid = await client.put([new File([ciphertext], "test.txt")], {
         onRootCidReady: (localCid: string) => {
           setCid(localCid)
         },
@@ -105,7 +103,6 @@ export default function Issue() {
           [responseBytes, title, cid, request.userAddress, dataToEncryptHash]
         )
 
-        console.log("---------  11----------------")
         submitWithPersonalSign(
           functionSignature,
           pkpWallet,

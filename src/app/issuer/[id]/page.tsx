@@ -37,7 +37,6 @@ export default function View({ params }: { params: { id: string } }) {
       )
 
       const issuer: Issuer = await preparedStmt.bind(params.id).first()
-      console.log(issuer)
       setIssuer(issuer)
     } catch (err) {
       console.log(err)

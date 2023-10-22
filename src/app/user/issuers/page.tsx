@@ -38,7 +38,6 @@ export default function Issuers() {
       )
 
       const issuers: Issuer[] = (await preparedStmt.all()).results as Issuer[]
-      console.log(issuers)
       setIssuers(issuers)
     } catch (err) {
       console.log(err)
@@ -55,7 +54,6 @@ export default function Issuers() {
   }
 
   const request = async (issuer: Issuer) => {
-    console.log(authMethod, issuer)
     if (authMethod && sessionSigs && pkpWallet) {
       const { ciphertext, dataToEncryptHash } = await encryptEmail(
         authMethod,

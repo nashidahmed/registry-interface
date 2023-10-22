@@ -49,8 +49,8 @@ export const litNodeClient = litAuthClient.litNodeClient
 
 const resourceAbilities = [
   {
-    resource: new LitPKPResource("*"),
-    ability: LitAbility.PKPSigning,
+    resource: new LitAccessControlConditionResource("*"),
+    ability: LitAbility.AccessControlConditionDecryption,
   },
 ]
 
@@ -119,10 +119,8 @@ export async function claimKey(
 
   try {
     const res: ClaimKeyResponse = await litNodeClient.claimKeyId(claimReq)
-    console.log(res)
     return res
   } catch (err) {
-    console.log(err)
     return
   }
 }
@@ -135,7 +133,6 @@ export async function getDiscordAddress(sub: string): Promise<string> {
   )
 
   const publicKey = litNodeClient.computeHDPubKey(keyId.slice(2))
-  console.log(publicKey)
 
   return ethers.utils.computeAddress(`0x${publicKey}`)
 }
@@ -148,7 +145,6 @@ export async function getGoogleAddress(sub: string): Promise<string> {
   )
 
   const publicKey = litNodeClient.computeHDPubKey(keyId.slice(2))
-  console.log(publicKey)
 
   return ethers.utils.computeAddress(`0x${publicKey}`)
 }
@@ -248,7 +244,7 @@ export async function encryptDocument(
       parameters: [":userAddress"],
       returnValueTest: {
         comparator: "=",
-        value: receiver,
+        value: receiver.toLowerCase(),
       },
     },
   ]
@@ -269,11 +265,27 @@ export async function encryptDocument(
 export async function decryptDocument(
   ciphertext: string,
   dataToEncryptHash: string,
-  sessionSigs: SessionSigs
+  sessionSigs: SessionSigs,
+  receiver: string
 ) {
   await litNodeClient.connect()
+  const accessControlConditions = [
+    {
+      contractAddress: "",
+      standardContractType: "",
+      chain,
+      method: "",
+      parameters: [":userAddress"],
+      returnValueTest: {
+        comparator: "=",
+        value: receiver.toLowerCase(),
+      },
+    },
+  ]
+
   const decryptedFile = await decryptToFile(
     {
+      accessControlConditions,
       ciphertext,
       dataToEncryptHash,
       chain,
@@ -282,7 +294,6 @@ export async function decryptDocument(
     litNodeClient
   )
   // eslint-disable-next-line no-console
-  console.log(decryptedFile)
   return decryptedFile
 }
 
@@ -302,7 +313,7 @@ export async function encryptEmail(
       parameters: [":userAddress"],
       returnValueTest: {
         comparator: "=",
-        value: receiver,
+        value: receiver.toLowerCase(),
       },
     },
   ]
@@ -335,7 +346,7 @@ export async function decryptEmail(
       parameters: [":userAddress"],
       returnValueTest: {
         comparator: "=",
-        value: issuerAddress,
+        value: issuerAddress.toLowerCase(),
       },
     },
   ]
@@ -351,8 +362,7 @@ export async function decryptEmail(
     },
     litNodeClient
   )
-  // eslint-disable-next-line no-console
-  console.log(decryptedEmail)
+
   return decryptedEmail
 }
 

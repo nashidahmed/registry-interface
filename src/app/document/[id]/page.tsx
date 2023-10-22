@@ -23,7 +23,6 @@ export default function View({ params }: { params: { id: string } }) {
     const preparedStmt = db.prepare(`SELECT * FROM ${tableName} WHERE to = ?1`)
 
     const document: IDocument = await preparedStmt.bind(params.id).first()
-    console.log(document)
     setDocument(document)
   }
 

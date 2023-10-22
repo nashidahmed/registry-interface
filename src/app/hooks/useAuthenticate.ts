@@ -23,7 +23,6 @@ export default function useAuthenticate(redirectUri?: string) {
       const result: AuthMethod = (await authenticateWithGoogle(
         redirectUri as any
       )) as any
-      console.log(result)
       setAuthMethod(result)
     } catch (err) {
       setError(err as Error)
@@ -44,7 +43,6 @@ export default function useAuthenticate(redirectUri?: string) {
       const result: AuthMethod = (await authenticateWithDiscord(
         redirectUri as any
       )) as any
-      console.log(result)
       setAuthMethod(result)
     } catch (err) {
       setError(err as Error)

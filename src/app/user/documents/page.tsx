@@ -22,7 +22,7 @@ export interface IDocument {
   cid: string
   title: string
   twitter: string
-  cipher: string
+  encryptData: string
 }
 
 export default function Documents() {
@@ -50,11 +50,9 @@ export default function Documents() {
         `SELECT * FROM ${documentsTable} WHERE receiver = ?`
       )
 
-      console.log(pkpWallet?.address.toLowerCase())
       const documents: IDocument[] = (
         await preparedStmt.bind(pkpWallet?.address.toLowerCase()).all()
       ).results as IDocument[]
-      console.log(documents)
       setDocuments(documents)
     } catch (err) {
       console.log(err)
@@ -68,13 +66,6 @@ export default function Documents() {
     while (twitterId[x] == "0") x++
 
     return `https://twitter.com/i/user/${twitterId.slice(x)}`
-  }
-
-  const viewDocument = (document: IDocument) => {
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("document-details", JSON.stringify(document))
-    }
-    router.push(`/user/view`)
   }
 
   return documents && documents.length !== 0 ? (
@@ -106,12 +97,12 @@ export default function Documents() {
                   </Link>
                 </td>
                 <td>
-                  <a
-                    onClick={() => viewDocument(document)}
+                  <Link
+                    href={`/user/document/${document.id}`}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer"
                   >
                     View document
-                  </a>
+                  </Link>
                 </td>
               </tr>
             ))}

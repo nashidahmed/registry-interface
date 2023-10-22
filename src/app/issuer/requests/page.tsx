@@ -55,7 +55,6 @@ export default function Requests() {
 
         const requests: IRequest[] = (await preparedStmt.bind(issuer.id).all())
           .results as IRequest[]
-        console.log(requests)
         setRequests(requests)
       } catch (err) {
         console.log(err)

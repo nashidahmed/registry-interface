@@ -37,7 +37,6 @@ export default function CreateIssuer() {
   const { responseBytes, setResponse } = useSismo()
 
   useEffect(() => {
-    console.log("test")
     if (
       typeof window !== "undefined" &&
       sessionStorage.getItem("create-form")
@@ -45,7 +44,6 @@ export default function CreateIssuer() {
       const formData = JSON.parse(
         sessionStorage.getItem("create-form") as string
       )
-      console.log(formData.name)
       if (formData.name) setName(formData.name)
       if (formData.website) setWebsite(formData.website)
       if (formData.desc) setDesc(formData.desc)
