@@ -8,18 +8,20 @@ import { LOCAL_STORAGE_KEYS } from "@lit-protocol/constants"
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
 import usePkpEthers from "@/hooks/usePkpEthers"
 import { WalletContext } from "@/layout"
-import { SessionSigs } from "@lit-protocol/types"
+import { AuthMethod, SessionSigs } from "@lit-protocol/types"
 import { usePathname, useRouter } from "next/navigation"
 
 export default function GoogleSignIn() {
   const pathname = usePathname()
   const redirectUri = ORIGIN + pathname
 
-  const { pkpWallet, setPkpWallet, setSessionSigs } = useContext<{
-    pkpWallet?: PKPEthersWallet | undefined
-    setPkpWallet?: React.Dispatch<SetStateAction<PKPEthersWallet | undefined>>
-    setSessionSigs?: React.Dispatch<SetStateAction<SessionSigs | undefined>>
-  }>(WalletContext)
+  const { pkpWallet, setPkpWallet, setSessionSigs, setAuthMethod } =
+    useContext<{
+      pkpWallet?: PKPEthersWallet | undefined
+      setAuthMethod?: React.Dispatch<SetStateAction<AuthMethod | undefined>>
+      setPkpWallet?: React.Dispatch<SetStateAction<PKPEthersWallet | undefined>>
+      setSessionSigs?: React.Dispatch<SetStateAction<SessionSigs | undefined>>
+    }>(WalletContext)
 
   const {
     authMethod,
@@ -46,7 +48,8 @@ export default function GoogleSignIn() {
 
   useEffect(() => {
     // If user is authenticated, fetch accounts
-    if (authMethod) {
+    if (authMethod && setAuthMethod) {
+      setAuthMethod(authMethod)
       router.replace(window.location.pathname, undefined)
       fetchAccount(authMethod)
     }
@@ -70,7 +73,6 @@ export default function GoogleSignIn() {
   useEffect(() => {
     if (pkpEthers && setPkpWallet) {
       setPkpWallet(pkpEthers)
-      console.log(pkpEthers)
     }
   }, [pkpEthers])
 

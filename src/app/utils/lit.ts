@@ -24,7 +24,12 @@ import {
 } from "@lit-protocol/auth-helpers"
 import { ethers } from "ethers"
 import { toUtf8Bytes } from "ethers/lib/utils"
-import { decryptToFile, encryptFile } from "@lit-protocol/lit-node-client"
+import {
+  decryptToFile,
+  encryptFile,
+  encryptString,
+} from "@lit-protocol/lit-node-client"
+import * as jose from "jose"
 
 const chain = "mumbai"
 export const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || "localhost"
@@ -228,7 +233,7 @@ export async function mintPKP(authMethod: AuthMethod): Promise<IRelayPKP> {
   return newPKP
 }
 
-export async function encrypt(
+export async function encryptDocument(
   file: File,
   sessionSigs: SessionSigs,
   receiver: string
@@ -260,7 +265,7 @@ export async function encrypt(
   }
 }
 
-export async function decrypt(
+export async function decryptDocument(
   ciphertext: string,
   dataToEncryptHash: string,
   sessionSigs: SessionSigs
@@ -278,6 +283,40 @@ export async function decrypt(
   // eslint-disable-next-line no-console
   console.log(decryptedFile)
   return decryptedFile
+}
+
+export async function encryptEmail(
+  authMethod: AuthMethod,
+  sessionSigs: SessionSigs,
+  receiver: string
+) {
+  const tokenPayload = jose.decodeJwt(authMethod.accessToken)
+  const email = tokenPayload["email"] as string
+  const accessControlConditions = [
+    {
+      contractAddress: "",
+      standardContractType: "",
+      chain,
+      method: "",
+      parameters: [":userAddress"],
+      returnValueTest: {
+        comparator: "=",
+        value: receiver,
+      },
+    },
+  ]
+
+  await litNodeClient.connect()
+
+  const { ciphertext, dataToEncryptHash } = await encryptString(
+    { accessControlConditions, sessionSigs, chain, dataToEncrypt: email },
+    litNodeClient
+  )
+
+  return {
+    ciphertext,
+    dataToEncryptHash,
+  }
 }
 
 /**

@@ -15,7 +15,7 @@ interface IDocument {
 export default function View({ params }: { params: { id: string } }) {
   const [document, setDocument] = useState<IDocument>()
   const appId = "0x1002"
-  const tableName: string = process.env.NEXT_PUBLIC_ISSERS_TABLE_NAME as string // Our pre-defined health check table
+  const tableName: string = process.env.NEXT_PUBLIC_ISSUERS_TABLE_NAME as string // Our pre-defined health check table
 
   const db = new Database()
 

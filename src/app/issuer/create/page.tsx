@@ -2,11 +2,7 @@
 
 import theRegistryAbi from "/public/abis/TheRegistry.json"
 
-import {
-  AuthType,
-  SismoConnectButton,
-  SismoConnectResponse,
-} from "@sismo-core/sismo-connect-react"
+import { AuthType, SismoConnectButton } from "@sismo-core/sismo-connect-react"
 import {
   FormEvent,
   SetStateAction,
@@ -18,13 +14,9 @@ import Input from "@/components/Input"
 import Textarea from "@/components/Textarea"
 import { ethers } from "ethers"
 import Button from "@/components/Button"
-import useAuthenticate from "@/hooks/useAuthenticate"
-import useAccount from "@/hooks/useAccount"
-import useSession from "@/hooks/useSession"
 import useBiconomy from "@/hooks/useBiconomy"
 import Link from "next/link"
 import useSismo from "@/hooks/useSismo"
-import usePkpEthers from "@/hooks/usePkpEthers"
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
 import { WalletContext } from "@/layout"
 
@@ -70,7 +62,7 @@ export default function CreateIssuer() {
       let contractInterface = new ethers.utils.Interface(theRegistryAbi)
       let functionSignature = contractInterface.encodeFunctionData(
         "createIssuer",
-        [responseBytes, name, website, desc, image]
+        [responseBytes, name, pkpWallet.address, website, desc, image]
       )
 
       submitWithPersonalSign(
@@ -137,6 +129,9 @@ export default function CreateIssuer() {
           <SismoConnectButton
             config={{
               appId: process.env.NEXT_PUBLIC_SISMO_APP_ID as string,
+              vault: {
+                impersonate: ["twitter:MIT", "twitter:UniofOxford"],
+              },
             }}
             auth={{ authType: AuthType.TWITTER }}
             onResponseBytes={(bytes: string) => {

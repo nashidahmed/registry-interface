@@ -40,6 +40,11 @@
       },
       {
         "internalType": "string",
+        "name": "creator",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
         "name": "website",
         "type": "string"
       },
@@ -90,6 +95,34 @@
         "type": "bytes4"
       }
     ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "encryptedEmail",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "cipher",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "issuerId",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "userAddress",
+        "type": "address"
+      }
+    ],
+    "name": "requestDocument",
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -208,6 +241,19 @@
   {
     "inputs": [],
     "name": "issuerTableId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "requestsTableId",
     "outputs": [
       {
         "internalType": "uint256",

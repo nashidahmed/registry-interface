@@ -11,7 +11,7 @@ import { mainnet, polygonMumbai } from "wagmi/chains"
 import { infuraProvider } from "wagmi/providers/infura"
 import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
 import { createContext, useState } from "react"
-import { SessionSigs } from "@lit-protocol/types"
+import { AuthMethod, SessionSigs } from "@lit-protocol/types"
 
 // 1. Get projectId
 // const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string
@@ -52,6 +52,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const [authMethod, setAuthMethod] = useState<AuthMethod | undefined>()
   const [pkpWallet, setPkpWallet] = useState<PKPEthersWallet | undefined>()
   const [sessionSigs, setSessionSigs] = useState<SessionSigs | undefined>()
 
@@ -61,7 +62,14 @@ export default function RootLayout({
         <WagmiConfig config={wagmiConfig}>
           <div>
             <WalletContext.Provider
-              value={{ pkpWallet, setPkpWallet, sessionSigs, setSessionSigs }}
+              value={{
+                authMethod,
+                setAuthMethod,
+                pkpWallet,
+                setPkpWallet,
+                sessionSigs,
+                setSessionSigs,
+              }}
             >
               {children}
             </WalletContext.Provider>

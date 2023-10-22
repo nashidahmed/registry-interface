@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 export interface Issuer {
   id: number
   name: string
+  creator: string
   website: string
   description: string
   twitter: string
@@ -18,7 +19,7 @@ export default function View({ params }: { params: { id: string } }) {
   const [issuer, setIssuer] = useState<Issuer>()
   const [loading, setLoading] = useState<boolean>(true)
   const appId = "0x1002"
-  const tableName: string = process.env.NEXT_PUBLIC_ISSERS_TABLE_NAME as string // Our pre-defined health check table
+  const tableName: string = process.env.NEXT_PUBLIC_ISSUERS_TABLE_NAME as string // Our pre-defined health check table
 
   const db = new Database()
 

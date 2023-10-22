@@ -1,14 +1,29 @@
 "use client"
 
 import { Issuer } from "@/issuer/[id]/page"
+import { WalletContext } from "@/layout"
+import { PKPEthersWallet } from "@lit-protocol/pkp-ethers"
 import { Database, Statement } from "@tableland/sdk"
+import { ethers } from "ethers"
 import Link from "next/link"
-import { useEffect, useState } from "react"
-const tableName: string = process.env.NEXT_PUBLIC_ISSERS_TABLE_NAME as string // Our pre-defined health check table
+import { SetStateAction, useContext, useEffect, useState } from "react"
+import theRegistryAbi from "/public/abis/TheRegistry.json"
+import { AuthMethod, SessionSigs } from "@lit-protocol/types"
+import { encryptEmail } from "@/utils/lit"
+import useBiconomy from "@/hooks/useBiconomy"
+
+const tableName: string = process.env.NEXT_PUBLIC_ISSUERS_TABLE_NAME as string // Our pre-defined health check table
 
 export default function Issuers() {
+  const { pkpWallet, authMethod, sessionSigs } = useContext<{
+    pkpWallet?: PKPEthersWallet
+    authMethod?: AuthMethod
+    sessionSigs?: SessionSigs
+    setPkpWallet?: React.Dispatch<SetStateAction<PKPEthersWallet>>
+  }>(WalletContext)
   const [issuers, setIssuers] = useState<Issuer[]>()
-  const [loading, setLoading] = useState<boolean>(true)
+  const [loadingIssuers, setLoadingIssuers] = useState<boolean>(true)
+  const { submitWithPersonalSign, loading, setLoading, txHash } = useBiconomy()
   const appId = "0x1002"
   const db = new Database()
 
@@ -28,7 +43,7 @@ export default function Issuers() {
     } catch (err) {
       console.log(err)
     } finally {
-      setLoading(false)
+      setLoadingIssuers(false)
     }
   }
 
@@ -37,6 +52,29 @@ export default function Issuers() {
     while (twitterId[x] == "0") x++
 
     return `https://twitter.com/i/user/${twitterId.slice(x)}`
+  }
+
+  const request = async (issuer: Issuer) => {
+    console.log(authMethod, issuer)
+    if (authMethod && sessionSigs && pkpWallet) {
+      const { ciphertext, dataToEncryptHash } = await encryptEmail(
+        authMethod,
+        sessionSigs,
+        issuer.creator
+      )
+
+      let contractInterface = new ethers.utils.Interface(theRegistryAbi)
+      let functionSignature = contractInterface.encodeFunctionData(
+        "requestDocument",
+        [dataToEncryptHash, ciphertext, issuer.id, pkpWallet.address]
+      )
+
+      submitWithPersonalSign(
+        functionSignature,
+        pkpWallet,
+        process.env.NEXT_PUBLIC_BICONOMY_REQUEST_API_ID as string
+      )
+    }
   }
 
   return issuers && issuers.length !== 0 ? (
@@ -57,56 +95,53 @@ export default function Issuers() {
           </thead>
           <tbody>
             {issuers.map((issuer) => (
-              <>
-                <tr className="text-center">
-                  <td>{issuer.name}</td>
-                  <td>
-                    <Link
-                      href={issuer.website}
-                      className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                      passHref
-                      target="_blank"
-                    >
-                      {issuer?.website}
-                    </Link>
-                  </td>
-                  <td>
-                    <Link
-                      href={`/issuer/${issuer.id}`}
-                      className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                      passHref
-                    >
-                      View details
-                    </Link>
-                  </td>
-                  <td>
-                    <Link
-                      href={getTwitterLink(issuer.twitter)}
-                      className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                      passHref
-                      target="_blank"
-                    >
-                      Link
-                    </Link>
-                  </td>
+              <tr className="text-center" key={issuer.id}>
+                <td>{issuer.name}</td>
+                <td>
+                  <Link
+                    href={issuer.website}
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    passHref
+                    target="_blank"
+                  >
+                    {issuer?.website}
+                  </Link>
+                </td>
+                <td>
+                  <Link
+                    href={`/issuer/${issuer.id}`}
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    passHref
+                  >
+                    View details
+                  </Link>
+                </td>
+                <td>
+                  <Link
+                    href={getTwitterLink(issuer.twitter)}
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    passHref
+                    target="_blank"
+                  >
+                    Link
+                  </Link>
+                </td>
 
-                  <td>
-                    <Link
-                      href={`/user/request/${issuer.id}`}
-                      className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                      passHref
-                    >
-                      Request {issuer.name}
-                    </Link>
-                  </td>
-                </tr>
-              </>
+                <td>
+                  <a
+                    onClick={() => request(issuer)}
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer"
+                  >
+                    Request {issuer.name}
+                  </a>
+                </td>
+              </tr>
             ))}
           </tbody>
         </table>
       </div>
     </div>
-  ) : loading ? (
+  ) : loadingIssuers ? (
     <div className="text-4xl flex justify-center mt-32 gap-4">
       Loading Issuers
       <div>
