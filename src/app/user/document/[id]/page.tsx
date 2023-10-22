@@ -26,7 +26,7 @@ export default function View({ params }: { params: { id: string } }) {
   const [document, setDocument] = useState<IDocument>()
   const [url, setUrl] = useState<string>()
   const [loading, setLoading] = useState<boolean>(true)
-  const [numPages, setNumPages] = useState<number>()
+  const [error, setError] = useState<Error>()
   const db = new Database()
 
   useEffect(() => {
@@ -82,28 +82,29 @@ export default function View({ params }: { params: { id: string } }) {
 
       setDocument(document)
     } catch (err) {
-      console.log(err)
+      setError(err as Error)
     } finally {
       setLoading(false)
     }
   }
 
-  function onDocumentLoadSuccess({
-    numPages: nextNumPages,
-  }: PDFDocumentProxy): void {
-    setNumPages(nextNumPages)
-  }
-
-  return document ? (
-    url && (
-      <iframe
-        src={url} // Use the Blob URL as the source
-        title="PDF Viewer"
-        width="1000px"
-        height="750px"
-      />
-    )
+  return url ? (
+    <iframe
+      src={url} // Use the Blob URL as the source
+      title="PDF Viewer"
+      width="1000px"
+      height="750px"
+    />
+  ) : loading || !error ? (
+    <div className="text-4xl flex justify-center mt-32 gap-4">
+      Loading Document
+      <div>
+        <div className="loader w-10 h-10"></div>
+      </div>
+    </div>
   ) : (
-    <div>No document found</div>
+    <div className="text-4xl flex justify-center mt-32">
+      You are not authorized to view this document
+    </div>
   )
 }
