@@ -86,6 +86,7 @@ export default function GoogleSignIn() {
     typeof window !== "undefined"
       ? localStorage.removeItem(LOCAL_STORAGE_KEYS.SESSION_KEY)
       : undefined
+    router.push("/")
   }
 
   function ButtonText() {
