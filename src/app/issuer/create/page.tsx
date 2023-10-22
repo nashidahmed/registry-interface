@@ -123,7 +123,7 @@ export default function CreateIssuer() {
           onChange={(e) => setDesc(e.target.value)}
           onBlur={saveForm}
         />
-        <div className="mx-auto">
+        <div className="mx-auto flex flex-col items-center">
           <SismoConnectButton
             config={{
               appId: process.env.NEXT_PUBLIC_SISMO_APP_ID as string,

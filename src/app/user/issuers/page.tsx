@@ -23,7 +23,7 @@ export default function Issuers() {
   }>(WalletContext)
   const [issuers, setIssuers] = useState<Issuer[]>()
   const [loadingIssuers, setLoadingIssuers] = useState<boolean>(true)
-  const { submitWithPersonalSign, loading, setLoading, txHash } = useBiconomy()
+  const { submitWithPersonalSign, loading, txHash } = useBiconomy()
   const appId = "0x1002"
   const db = new Database()
 
@@ -130,7 +130,16 @@ export default function Issuers() {
                     onClick={() => request(issuer)}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer"
                   >
-                    Request {issuer.name}
+                    {loading ? (
+                      <div className="flex gap-2 justify-center">
+                        Requesting {issuer.name}
+                        <div>
+                          <div className="loader w-5 h-5"></div>
+                        </div>
+                      </div>
+                    ) : (
+                      `Request ${issuer.name}`
+                    )}
                   </a>
                 </td>
               </tr>
@@ -138,6 +147,21 @@ export default function Issuers() {
           </tbody>
         </table>
       </div>
+      {txHash && (
+        <div className="text-center mt-8">
+          Request successful
+          <br />
+          Tx ID:{" "}
+          <Link
+            className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+            href={`https://mumbai.polygonscan.com/tx/${txHash}`}
+            passHref
+            target="_blank"
+          >
+            {txHash}
+          </Link>
+        </div>
+      )}
     </div>
   ) : loadingIssuers ? (
     <div className="text-4xl flex justify-center mt-32 gap-4">
