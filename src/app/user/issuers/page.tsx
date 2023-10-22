@@ -130,16 +130,7 @@ export default function Issuers() {
                     onClick={() => request(issuer)}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer"
                   >
-                    {loading ? (
-                      <div className="flex gap-2 justify-center">
-                        Requesting {issuer.name}
-                        <div>
-                          <div className="loader w-5 h-5"></div>
-                        </div>
-                      </div>
-                    ) : (
-                      `Request ${issuer.name}`
-                    )}
+                    Request {issuer.name}
                   </a>
                 </td>
               </tr>
@@ -147,6 +138,14 @@ export default function Issuers() {
           </tbody>
         </table>
       </div>
+      {loading && (
+        <div className="flex gap-2 justify-center mt-8">
+          Requesting document
+          <div>
+            <div className="loader w-5 h-5"></div>
+          </div>
+        </div>
+      )}
       {txHash && (
         <div className="text-center mt-8">
           Request successful
