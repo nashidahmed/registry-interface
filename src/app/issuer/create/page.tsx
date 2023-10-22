@@ -128,7 +128,12 @@ export default function CreateIssuer() {
             config={{
               appId: process.env.NEXT_PUBLIC_SISMO_APP_ID as string,
               vault: {
-                impersonate: ["twitter:MIT", "twitter:UniofOxford"],
+                impersonate: [
+                  "twitter:MIT",
+                  "twitter:UniofOxford",
+                  "twitter:iitbombay",
+                  "twitter:UAL",
+                ],
               },
             }}
             auth={{ authType: AuthType.TWITTER }}
