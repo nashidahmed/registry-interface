@@ -1,6 +1,32 @@
 # TheRegistry Interface
 
-This is the frontend for TheRegistry, a Web3 Document Issuer/Viewer built in for the ETHOnline 2023 hackathon.
+[Link to the Solidity code](https://github.com/nashidahmed/registry-core)
+
+[Live demo](https://the-registry.vercel.app/)
+
+Herein lies the frontend code for The Registry
+
+### Welcome to TheRegistry: Secure and Seamless Document Management
+
+#### Built for the ETHOnline 2023 hackathon.
+
+At TheRegistry, we're transforming the way documents are issued and managed, making the process secure, efficient, and user-friendly. Say goodbye to traditional paper documents and complex blockchain interactions. With our platform, you can effortlessly request and access your digital documents.
+
+### Key Features:
+
+**Streamlined User Experience**: We've integrated Lit protocol to provide a seamless experience. You can generate decentralized keys linked to your Gmail address, eliminating the need for complex tools like MetaMask.
+
+**Gasless Transactions**: Enjoy gas-free interactions, whether you're an Issuer or a User. No more worries about transaction fees.
+
+**Cost-Efficiency**: Our deployment on the Polygon network means you benefit from lower transaction fees, making document management more affordable.
+
+**Twitter Authenticity**: We ensure the authenticity of Issuers through zero-knowledge proofs. Only the genuine Twitter account owner can issue and verify documents.
+
+**Data Security**: We use Tableland, a web3-native database, to store your profile information, document requests, and issued documents. Your data is in safe hands.
+
+**Document Encryption**: Lit protocol not only streamlines the process but also secures your documents. Only designated Users can decrypt and access the documents issued to them.
+
+Join us in the future of document management. [Sign up today](https://the-registry.vercel.app/) and experience a new level of simplicity and security.
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
