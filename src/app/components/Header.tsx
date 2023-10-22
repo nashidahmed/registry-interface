@@ -15,7 +15,10 @@ export default function Header({ isIssuer }: { isIssuer?: boolean }) {
             <Link href={"/issuer/create"}>Create Profile</Link>
           </>
         ) : (
-          <Link href={"/user/issuers"}>View Issuers</Link>
+          <>
+            <Link href={"/user/issuers"}>View Issuers</Link>
+            <Link href={"/user/documents"}>View Documents</Link>
+          </>
         )}
         <GoogleSignIn />
         {/* {isIssuer ? <GoogleSignIn /> : <DiscordSignIn />} */}

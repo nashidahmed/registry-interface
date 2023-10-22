@@ -26,6 +26,7 @@ import { ethers } from "ethers"
 import { toUtf8Bytes } from "ethers/lib/utils"
 import {
   decryptToFile,
+  decryptToString,
   encryptFile,
   encryptString,
 } from "@lit-protocol/lit-node-client"
@@ -317,6 +318,42 @@ export async function encryptEmail(
     ciphertext,
     dataToEncryptHash,
   }
+}
+
+export async function decryptEmail(
+  ciphertext: string,
+  dataToEncryptHash: string,
+  sessionSigs: SessionSigs,
+  issuerAddress: string
+) {
+  const accessControlConditions = [
+    {
+      contractAddress: "",
+      standardContractType: "",
+      chain,
+      method: "",
+      parameters: [":userAddress"],
+      returnValueTest: {
+        comparator: "=",
+        value: issuerAddress,
+      },
+    },
+  ]
+
+  await litNodeClient.connect()
+  const decryptedEmail = await decryptToString(
+    {
+      accessControlConditions,
+      ciphertext,
+      dataToEncryptHash,
+      chain,
+      sessionSigs,
+    },
+    litNodeClient
+  )
+  // eslint-disable-next-line no-console
+  console.log(decryptedEmail)
+  return decryptedEmail
 }
 
 /**

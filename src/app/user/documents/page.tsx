@@ -13,27 +13,26 @@ import { encryptEmail } from "@/utils/lit"
 import useBiconomy from "@/hooks/useBiconomy"
 import { useRouter } from "next/navigation"
 
-const issuersTable: string = process.env
-  .NEXT_PUBLIC_ISSUERS_TABLE_NAME as string // Our pre-defined health check table
-const requestsTable: string = process.env
-  .NEXT_PUBLIC_REQUESTS_TABLE_NAME as string // Our pre-defined health check table
+const documentsTable: string = process.env
+  .NEXT_PUBLIC_DOCUMENTS_TABLE_NAME as string // Our pre-defined health check table
 
-export interface IRequest {
+export interface IDocument {
   id: number
-  userAddress: string
-  issuerId: string
-  encryptedEmail: string
+  receiver: string
+  cid: string
+  title: string
+  twitter: string
   cipher: string
 }
 
-export default function Requests() {
+export default function Documents() {
   const { pkpWallet, authMethod, sessionSigs } = useContext<{
     pkpWallet?: PKPEthersWallet
     authMethod?: AuthMethod
     sessionSigs?: SessionSigs
     setPkpWallet?: React.Dispatch<SetStateAction<PKPEthersWallet>>
   }>(WalletContext)
-  const [requests, setRequests] = useState<IRequest[]>()
+  const [documents, setDocuments] = useState<IDocument[]>()
   const [loading, setLoading] = useState<boolean>(true)
   const appId = "0x1002"
   const db = new Database()
@@ -41,47 +40,22 @@ export default function Requests() {
 
   useEffect(() => {
     if (pkpWallet) {
-      getRequests()
+      getDocuments()
     }
   }, [pkpWallet])
 
-  const getRequests = async () => {
-    const issuer = await getIssuer()
-    if (issuer) {
-      try {
-        const preparedStmt: Statement = db.prepare(
-          `SELECT * FROM ${requestsTable} WHERE issuerId = ?1`
-        )
-
-        const requests: IRequest[] = (await preparedStmt.bind(issuer.id).all())
-          .results as IRequest[]
-        console.log(requests)
-        setRequests(requests)
-      } catch (err) {
-        console.log(err)
-      } finally {
-        setLoading(false)
-      }
-    }
-  }
-
-  const issueDocument = (request: IRequest) => {
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("request-details", JSON.stringify(request))
-    }
-    router.push(`/issuer/issue`)
-  }
-
-  const getIssuer = async (): Promise<Issuer | undefined> => {
+  const getDocuments = async () => {
     try {
       const preparedStmt: Statement = db.prepare(
-        `SELECT * FROM ${issuersTable} WHERE creator = ?1`
+        `SELECT * FROM ${documentsTable} WHERE receiver = ?`
       )
 
-      const issuer: Issuer = (await preparedStmt
-        .bind(pkpWallet?.address)
-        .first()) as Issuer
-      return issuer
+      console.log(pkpWallet?.address.toLowerCase())
+      const documents: IDocument[] = (
+        await preparedStmt.bind(pkpWallet?.address.toLowerCase()).all()
+      ).results as IDocument[]
+      console.log(documents)
+      setDocuments(documents)
     } catch (err) {
       console.log(err)
     } finally {
@@ -89,30 +63,54 @@ export default function Requests() {
     }
   }
 
-  return requests && requests.length !== 0 ? (
+  const getTwitterLink = (twitterId: string) => {
+    let x = appId.length
+    while (twitterId[x] == "0") x++
+
+    return `https://twitter.com/i/user/${twitterId.slice(x)}`
+  }
+
+  const viewDocument = (document: IDocument) => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("document-details", JSON.stringify(document))
+    }
+    router.push(`/user/view`)
+  }
+
+  return documents && documents.length !== 0 ? (
     <div className="w-full">
       <header className="h-24 flex items-center justify-center text-4xl">
-        Registered Requests
+        My Documents
       </header>
       <div className="max-w-4xl p-4 bg-white border border-gray-200 rounded-lg shadow-2xl sm:p-6 md:p-8 flex flex-col gap-5 mx-auto">
         <table className="table-auto">
           <thead>
             <tr>
-              <th>Address</th>
-              <th>Issue document</th>
+              <th>Title</th>
+              <th>Issued by</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {requests.map((request) => (
-              <tr className="text-center" key={request.id}>
-                <td>{request.userAddress}</td>
-
+            {documents.map((document) => (
+              <tr className="text-center" key={document.id}>
+                <td>{document.title}</td>
+                <td>
+                  <Link
+                    href={getTwitterLink(document.twitter)}
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    passHref
+                    target="_blank"
+                  >
+                    Link to Twitter
+                  </Link>
+                </td>
                 <td>
                   <a
-                    onClick={() => issueDocument(request)}
+                    onClick={() => viewDocument(document)}
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer"
                   >
-                    Issue document
+                    View document
                   </a>
                 </td>
               </tr>
@@ -123,12 +121,12 @@ export default function Requests() {
     </div>
   ) : loading ? (
     <div className="text-4xl flex justify-center mt-32 gap-4">
-      Loading Requests
+      Loading Documents
       <div>
         <div className="loader w-10 h-10"></div>
       </div>
     </div>
   ) : (
-    <div className="text-4xl flex justify-center mt-32">No requests found</div>
+    <div className="text-4xl flex justify-center mt-32">No documents found</div>
   )
 }
