@@ -24,7 +24,7 @@ export default function View({ params }: { params: { id: string } }) {
     setPkpWallet?: React.Dispatch<SetStateAction<PKPEthersWallet>>
   }>(WalletContext)
   const [document, setDocument] = useState<IDocument>()
-  const [url, setUrl] = useState()
+  const [url, setUrl] = useState<string>()
   const [loading, setLoading] = useState<boolean>(true)
   const [numPages, setNumPages] = useState<number>()
   const db = new Database()
@@ -73,8 +73,6 @@ export default function View({ params }: { params: { id: string } }) {
             new Blob([decryptedData], { type: "application/pdf" } /* (1) */)
           )
 
-          console.log(url)
-          console.log(decryptedData)
           setUrl(url)
         }
         reader.readAsText(files[0])
